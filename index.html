@@ -145,8 +145,8 @@ td{
   font-variant-numeric:tabular-nums;
 }
 th.l,td.l{text-align:left}
-td.who{font-weight:500;white-space:normal;line-height:1.25;padding-left:14px}
-td.who small{display:block;color:var(--muted);font-size:11.5px;font-weight:400;margin-top:1px}
+td.who{font-weight:500;white-space:normal;line-height:1.22;padding-left:8px;min-width:88px}
+td.who small{display:block;color:var(--muted);font-size:10.5px;font-weight:400;margin-top:1px}
 td.who .sd{
   font-family:var(--display);font-size:10.5px;color:var(--clay);
   border:1px solid rgba(193,96,58,.5);padding:0 4px;margin-left:6px;
@@ -166,6 +166,19 @@ td.place{font-family:var(--display);font-size:17px;font-weight:600;padding-right
 }
 td.place.top{color:var(--ball)}
 .pending{color:var(--muted);opacity:.45}
+td.n{color:var(--muted);font-family:var(--display);font-size:11px;width:1.4em;padding-left:10px}
+th.n{padding-left:10px}
+td.self{background:repeating-linear-gradient(45deg,rgba(237,231,223,.06) 0 4px,transparent 4px 8px)}
+td.cell{
+  font-family:var(--display);font-size:11.5px;letter-spacing:.02em;
+  white-space:normal;line-height:1.25;padding-left:3px;padding-right:3px;
+}
+td.cellw{color:var(--ball)}
+th.mx,td.mx{display:none}
+@media (min-width:880px){
+  th.mx,td.mx{display:table-cell}
+  td.cell{font-size:13px;white-space:nowrap}
+}
 .gmatches{border-top:1px solid rgba(237,231,223,.12);padding:8px 14px 12px}
 .gmcap{
   font-family:var(--display);font-size:9.5px;letter-spacing:.16em;
@@ -191,15 +204,15 @@ td.place.top{color:var(--ball)}
 }
 
 /* ── сетка ── */
-.br{
-  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
-  gap:8px;align-items:stretch;
+.br{display:grid;grid-template-columns:1fr;gap:14px;align-items:stretch}
+@media (min-width:700px){
+  .br{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 }
 .col{display:flex;flex-direction:column;min-width:0}
 .col h3{
-  font-family:var(--display);font-size:9.5px;letter-spacing:.12em;
+  font-family:var(--display);font-size:10.5px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--clay);
-  padding-bottom:8px;flex:none;text-align:center;
+  padding-bottom:7px;flex:none;text-align:left;
 }
 .col .inner{
   display:flex;flex-direction:column;justify-content:space-around;
@@ -211,14 +224,14 @@ td.place.top{color:var(--ball)}
 }
 .tie.done{border-left-color:var(--ball)}
 .tie .cap{
-  font-family:var(--display);font-size:8px;letter-spacing:.1em;
+  font-family:var(--display);font-size:9px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--muted);
-  padding:4px 6px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:5px 10px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.tie .cap .when{display:none}
+.tie .cap .when{color:var(--clay);margin-left:8px}
 .tie .row{
-  display:flex;justify-content:space-between;gap:5px;align-items:baseline;
-  padding:5px 6px;font-size:12px;line-height:1.15;
+  display:flex;justify-content:space-between;gap:8px;align-items:baseline;
+  padding:6px 10px;font-size:13.5px;line-height:1.2;
   border-top:1px solid rgba(237,231,223,.07);
 }
 .tie .row:first-of-type{border-top:0}
@@ -226,29 +239,28 @@ td.place.top{color:var(--ball)}
 .tie .row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .tie .row .nm.code{font-family:var(--display);color:var(--muted);letter-spacing:.08em}
 .tie .row.w .nm.code{color:var(--ball)}
-.tie .row .sc{font-family:var(--display);flex:none;font-size:11px}
-.tsc{
-  font-family:var(--display);font-size:11px;letter-spacing:.04em;
-  color:var(--ball);padding:3px 6px 5px;
-  border-top:1px solid rgba(215,230,74,.2);
+.tie .row .sc{
+  font-family:var(--display);flex:none;font-size:13px;letter-spacing:.04em;
 }
+
 /* соединители */
-.col.r2 .tie::before,.col.r3 .tie::before{
-  content:"";position:absolute;left:-9px;top:50%;width:7px;
-  border-top:1px solid rgba(237,231,223,.2);
-}
-.col.r1 .tie::after,.col.r2 .tie::after{
-  content:"";position:absolute;right:-9px;top:50%;width:7px;
-  border-top:1px solid rgba(237,231,223,.2);
+@media (min-width:700px){
+  .col.r2 .tie::before,.col.r3 .tie::before{
+    content:"";position:absolute;left:-17px;top:50%;width:15px;
+    border-top:1px solid rgba(237,231,223,.2);
+  }
+  .col.r1 .tie::after,.col.r2 .tie::after{
+    content:"";position:absolute;right:-17px;top:50%;width:15px;
+    border-top:1px solid rgba(237,231,223,.2);
+  }
 }
 .third{margin-top:10px;flex:none}
 .third .tie::before,.third .tie::after{display:none}
 @media (min-width:700px){
-  .br{gap:16px}
-  .tie .row{font-size:14px;padding:7px 10px}
-  .tie .cap{font-size:9.5px;padding:6px 10px 2px}
-  .tie .cap .when{display:inline;color:var(--clay);margin-left:8px}
-  .col h3{font-size:11px;letter-spacing:.18em}
+  .col h3{text-align:center}
+  .tie .row{font-size:13px;padding:6px 8px}
+  .tie .row .sc{font-size:11.5px}
+  .tie .cap .when{display:none}
 }
 
 /* ── расписание ── */
@@ -429,7 +441,7 @@ const RESULTS = {
 };
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 15:58 мск";
+const UPDATED = "27 августа, 16:16 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -583,34 +595,34 @@ const $ = id => document.getElementById(id);
 function renderGroups(){
   $("groups-box").innerHTML = Object.keys(GROUPS).map(g => {
     const cs = GROUPS[g], t = table(g), done = groupDone(g);
-    const head = '<tr><th class="l">Участник</th><th>В</th><th>Сеты</th><th>Геймы</th><th>Место</th></tr>';
+    const head = '<tr><th class="n">№</th><th class="l">Участник</th>' +
+      cs.map((c, i) => "<th>" + (i + 1) + "</th>").join("") +
+      '<th class="mx">В</th><th class="mx">Сеты</th><th class="mx">Геймы</th>' +
+      "<th>Место</th></tr>";
     const body = cs.map((c, i) => {
       const p = PLAYERS[c], r = t.rows[i], played = r.p > 0;
       const seed = p.seed ? '<span class="sd">№' + p.seed + "</span>" : "";
+      const stat = esc(p.city);
+      const cells = cs.map(o => {
+        if(o === c) return '<td class="self"></td>';
+        const m = between(c, o);
+        return m
+          ? '<td class="cell' + (m.aWon ? " cellw" : "") + '">' + fmt(m) + "</td>"
+          : '<td class="cell pending">—</td>';
+      }).join("");
       return "<tr>" +
-        '<td class="who l">' + esc(p.name) + seed + "<small>" + esc(p.city) + "</small></td>" +
-        '<td class="pts">' + (played ? r.w : "—") + "</td>" +
-        "<td>" + (played ? r.sw + ":" + r.sl : "—") + "</td>" +
-        "<td>" + (played ? r.gw + ":" + r.gl : "—") + "</td>" +
+        '<td class="n">' + (i + 1) + "</td>" +
+        '<td class="who l">' + esc(p.name) + seed + "<small>" + stat + "</small></td>" +
+        cells +
+        '<td class="pts mx">' + (played ? r.w : "—") + "</td>" +
+        '<td class="mx">' + (played ? r.sw + ":" + r.sl : "—") + "</td>" +
+        '<td class="mx">' + (played ? r.gw + ":" + r.gl : "—") + "</td>" +
         '<td class="place' + (done && r.place <= 2 ? " top" : "") + '">' +
           (done ? r.place : "—") + "</td></tr>";
     }).join("");
-
-    const games = groupIds(g).map(id => {
-      const [x, y] = id.split("-");
-      const r = parse(RESULTS[id]);
-      const nm = (code, won) => '<span class="gn' + (won ? " w" : "") + '">' +
-        esc(shortName(PLAYERS[code].name)) + "</span>";
-      const sc = r
-        ? '<span class="gs">' + fmt(r) + "</span>"
-        : '<span class="gs pending">не сыгран</span>';
-      return '<div class="gm">' + nm(x, r && r.aWon) +
-        '<span class="vs">—</span>' + nm(y, r && !r.aWon) + sc + "</div>";
-    }).join("");
-
     return '<div class="gcard"><h3>Группа «' + g + '» <em>' + cs.length + " участника</em></h3>" +
-      "<table><thead>" + head + "</thead><tbody>" + body + "</tbody></table>" +
-      '<div class="gmatches"><div class="gmcap">Матчи группы</div>' + games + "</div></div>";
+      '<div class="scroll"><table><thead>' + head + "</thead><tbody>" + body +
+      "</tbody></table></div></div>";
   }).join("");
 }
 
@@ -629,9 +641,10 @@ function tieBox(id){
   };
   const sa = r ? fmt(r) : "", sb = "";
   const when = WHEN[id] ? '<span class="when">' + WHEN[id] + "</span>" : "";
-  const line = r ? '<div class="tsc">' + fmt(r.aWon ? r : flip(r)) + "</div>" : "";
+  const sc = r ? fmt(r.aWon ? r : flip(r)) : "";
   return '<div class="tie' + (r ? " done" : "") + '"><div class="cap">' + (k.short || k.cap) + when + "</div>" +
-    row(s.a, r && r.aWon, "") + row(s.b, r && !r.aWon, "") + line + "</div>";
+    row(s.a, r && r.aWon, r && r.aWon ? sc : "") +
+    row(s.b, r && !r.aWon, r && !r.aWon ? sc : "") + "</div>";
 }
 
 function renderBracket(){
