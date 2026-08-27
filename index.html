@@ -172,8 +172,9 @@ td.place.top{color:var(--ball)}
 .tie .cap{
   font-family:var(--display);font-size:9px;letter-spacing:.14em;
   text-transform:uppercase;color:var(--muted);
-  padding:6px 10px 2px;
+  padding:6px 10px 3px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;
 }
+.tie .cap .when{color:var(--clay)}
 .tie .row{
   display:flex;justify-content:space-between;gap:8px;
   padding:6px 10px;font-size:13px;
@@ -211,9 +212,14 @@ td.place.top{color:var(--ball)}
   display:flex;justify-content:space-between;align-items:baseline;gap:10px;
 }
 .day h3 span{font-size:10.5px;font-weight:400;letter-spacing:.14em;color:var(--muted)}
-.round{
-  font-family:var(--display);font-size:10px;letter-spacing:.18em;
-  text-transform:uppercase;color:var(--clay);padding:15px 0 4px;
+.slotline{
+  font-family:var(--display);font-size:15px;letter-spacing:.1em;
+  color:var(--ball);padding:16px 0 5px;
+  font-variant-numeric:tabular-nums;
+}
+.kolabel{
+  font-family:var(--display);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--clay);
 }
 .match{
   display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
@@ -312,7 +318,7 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
 
   <section id="schedule">
     <h2>Расписание</h2>
-    <p class="lede">Групповой этап идёт в три тура: в каждом туре группы А, Б и В играют по одному матчу, группа Г — по два, поэтому без игры надолго никто не остаётся.</p>
+    <p class="lede">Два корта. Время указано местное; расписание может корректироваться по ходу турнира.</p>
     <div id="schedule-box"></div>
   </section>
 
@@ -378,8 +384,7 @@ const RESULTS = {
   "ПФ1": "", "ПФ2": "", "Ф": "", "М3": ""
 };
 
-const TIMES = {};                 // "А1-А2": ["10:00", "Корт 1"]
-const FORMAT = { match: "", courts: "" };
+const FORMAT = { match: "", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
 const UPDATED = "27 августа, 15:30";
 
 /* ═══════ состав ═══════ */
@@ -414,19 +419,36 @@ const KO = {
   "М3":  { cap:"Матч за 3 место", a:{lose:"ПФ1"}, b:{lose:"ПФ2"} }
 };
 
-/* ═══════ календарь ═══════ */
-const DAYS = [
-  { date:"28 августа", dow:"пятница", blocks:[
-    { round:"Групповой этап · тур 1", ids:["А1-А2","Б1-Б2","В1-В2","Г1-Г2","Г3-Г4"] },
-    { round:"Групповой этап · тур 2", ids:["А1-А3","Б1-Б3","В1-В3","Г1-Г3","Г2-Г4"] } ]},
-  { date:"29 августа", dow:"суббота", blocks:[
-    { round:"Групповой этап · тур 3", ids:["А2-А3","Б2-Б3","В2-В3","Г1-Г4","Г2-Г3"] },
-    { round:"1/4 финала", ids:["ЧФ1","ЧФ2","ЧФ3","ЧФ4"] } ]},
-  { date:"30 августа", dow:"воскресенье", blocks:[
-    { round:"1/2 финала", ids:["ПФ1","ПФ2"] },
-    { round:"Матч за 3 место", ids:["М3"] },
-    { round:"Финал", ids:["Ф"] } ]}
+/* ═══════ расписание ═══════
+   Правится по команде: время, корт, порядок матчей.
+   c — номер корта. Для группового матча — коды игроков, для сетки — ko.   */
+const SCHEDULE = [
+  { date:"28 августа", dow:"пятница", slots:[
+    { t:"15:00", m:[ {c:1,a:"Г4",b:"Г3"}, {c:2,a:"В1",b:"В2"} ] },
+    { t:"16:30", m:[ {c:1,a:"А3",b:"А2"}, {c:2,a:"Г4",b:"Г2"} ] },
+    { t:"17:30", m:[ {c:1,a:"Г1",b:"Г3"}, {c:2,a:"В1",b:"В3"} ] },
+    { t:"19:00", m:[ {c:1,a:"Г1",b:"Г2"}, {c:2,a:"А1",b:"А3"} ] }
+  ]},
+  { date:"29 августа", dow:"суббота", slots:[
+    { t:"9:00",  m:[ {c:1,a:"Б2",b:"Б3"}, {c:2,a:"А1",b:"А2"} ] },
+    { t:"10:30", m:[ {c:1,a:"Г1",b:"Г4"}, {c:2,a:"Г2",b:"Г3"} ] },
+    { t:"12:00", m:[ {c:1,a:"Б1",b:"Б3"}, {c:2,a:"В2",b:"В3"} ] },
+    { t:"13:30", m:[ {c:1,a:"Б1",b:"Б2"} ] },
+    { t:"15:00", m:[ {c:1,ko:"ЧФ3"}, {c:2,ko:"ЧФ4"} ] },
+    { t:"16:30", m:[ {c:1,ko:"ЧФ1"}, {c:2,ko:"ЧФ2"} ] }
+  ]},
+  { date:"30 августа", dow:"воскресенье", slots:[
+    { t:"9:00",  m:[ {c:1,ko:"ПФ1"}, {c:2,ko:"ПФ2"} ] },
+    { t:"12:00", m:[ {c:1,ko:"М3"} ] },
+    { t:"13:30", m:[ {c:1,ko:"Ф"} ] }
+  ]}
 ];
+
+/* когда и где играется матч сетки — для подписи в сетке */
+const WHEN = {};
+SCHEDULE.forEach(d => d.slots.forEach(sl => sl.m.forEach(m => {
+  if(m.ko) WHEN[m.ko] = d.date + " · " + sl.t + " · корт " + m.c;
+})));
 
 /* ═══════ счёт ═══════ */
 function parse(score){
@@ -492,8 +514,8 @@ function side(ref){
       const r = t.order[ref.pos - 1];
       return { name: PLAYERS[r.code].name, code: ref.g + ref.pos, done:true };
     }
-    return { name: "Победитель группы " + ref.g, code: ref.g + ref.pos, done:false,
-             short: ref.g + (ref.pos === 1 ? "1" : "2") };
+    return { name: (ref.pos === 1 ? "Победитель группы " : "2-е место группы ") + ref.g,
+             code: "", done:false };
   }
   const src = ref.win || ref.lose;
   const r = parse(RESULTS[src]);
@@ -552,7 +574,8 @@ function tieBox(id){
       esc(x.name) + "</span>" +
       '<span class="sc">' + (sc || "") + "</span></div>";
   const sa = r ? fmt(r) : "", sb = "";
-  return '<div class="tie' + (r ? " done" : "") + '"><div class="cap">' + k.cap + "</div>" +
+  const when = WHEN[id] ? '<span class="when">' + WHEN[id] + "</span>" : "";
+  return '<div class="tie' + (r ? " done" : "") + '"><div class="cap">' + k.cap + when + "</div>" +
     row(s.a, r && r.aWon, r && r.aWon ? sa : "") +
     row(s.b, r && !r.aWon, r && !r.aWon ? fmt(flip(r)) : "") + "</div>";
 }
@@ -570,27 +593,32 @@ function renderBracket(){
     tieBox("М3") + "</div></div>";
 }
 
-function matchRow(id){
-  const r = parse(RESULTS[id]);
-  let a, b, ca = "", cb = "";
-  if(KO[id]){ const s = sides(id); a = s.a.name; b = s.b.name; ca = s.a.code; cb = s.b.code; }
-  else { const [x, y] = id.split("-"); a = PLAYERS[x].name; b = PLAYERS[y].name; ca = x; cb = y; }
-  const t = TIMES[id];
-  const tag = t ? t[0] + (t[1] ? " · " + t[1] : "") : (KO[id] ? KO[id].cap.split(" · ")[0] : id.split("-")[0][0]);
-  const line = (nm, code, won) => '<span class="pl' + (won ? " w" : "") + '">' +
-    '<span class="slot">' + code + "</span>" + esc(nm) + "</span>";
+function scheduleRow(m){
+  let a, b, r;
+  if(m.ko){
+    const sd = sides(m.ko);
+    a = sd.a; b = sd.b; r = parse(RESULTS[m.ko]);
+  } else {
+    a = { name: PLAYERS[m.a].name, code: m.a };
+    b = { name: PLAYERS[m.b].name, code: m.b };
+    r = between(m.a, m.b);
+  }
+  const line = (x, won) => '<span class="pl' + (won ? " w" : "") + '">' +
+    '<span class="slot">' + (x.code || "") + "</span>" + esc(x.name) + "</span>";
   const sc = r ? '<span class="sc2">' + fmt(r) + "</span>"
-               : '<span class="sc2 pending">—</span>';
-  return '<div class="match"><span class="tag">' + esc(tag) + "</span>" +
-    '<span class="pair">' + line(a, ca, r && r.aWon) + line(b, cb, r && !r.aWon) + "</span>" + sc + "</div>";
+               : '<span class="sc2 pending">не сыгран</span>';
+  const cap = m.ko ? '<span class="kolabel">' + KO[m.ko].cap.split(" · ")[0] + "</span>" : "";
+  return '<div class="match"><span class="tag">Корт ' + m.c + "</span>" +
+    '<span class="pair">' + cap + line(a, r && r.aWon) + line(b, r && !r.aWon) + "</span>" +
+    sc + "</div>";
 }
 
 function renderSchedule(){
-  $("schedule-box").innerHTML = DAYS.map(d => {
-    const n = d.blocks.reduce((s, b) => s + b.ids.length, 0);
+  $("schedule-box").innerHTML = SCHEDULE.map(d => {
+    const n = d.slots.reduce((s, sl) => s + sl.m.length, 0);
     return '<div class="day"><h3>' + d.date + "<span>" + d.dow + " · " + n + " матчей</span></h3>" +
-      d.blocks.map(b => '<div class="round">' + b.round + "</div>" +
-        b.ids.map(matchRow).join("")).join("") + "</div>";
+      d.slots.map(sl => '<div class="slotline">' + sl.t + "</div>" +
+        sl.m.map(scheduleRow).join("")).join("") + "</div>";
   }).join("");
 }
 
