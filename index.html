@@ -24,7 +24,7 @@
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
-html{scroll-behavior:smooth;scroll-padding-top:58px}
+html{scroll-behavior:auto}
 body{
   background:var(--ground);color:var(--line);
   font-family:var(--body);line-height:1.5;
@@ -61,10 +61,13 @@ nav a{
   text-transform:uppercase;color:var(--muted);text-decoration:none;
   border-bottom:2px solid transparent;
 }
-nav a:hover,nav a:focus-visible{color:var(--line);border-bottom-color:var(--clay)}
+nav a:hover,nav a:focus-visible{color:var(--line)}
+nav a.on{color:var(--ball);border-bottom-color:var(--ball)}
+nav ul{scrollbar-width:none}
+nav ul::-webkit-scrollbar{display:none}
 
 /* ── шапка ── */
-header{padding:40px 0 26px;text-align:center}
+header{padding:26px 0 20px;text-align:center}
 .discipline{
   font-family:var(--display);font-size:10.5px;letter-spacing:.26em;
   text-transform:uppercase;color:var(--clay);
@@ -82,6 +85,21 @@ h1{
 .facts div{
   background:var(--ground-2);padding:9px 16px;flex:1 1 150px;min-width:0;
 }
+@media (max-width:699px){
+  header{padding:16px 0 14px}
+  h1{font-size:clamp(23px,6.6vw,34px);margin:5px 0 10px}
+  .discipline{font-size:9px;letter-spacing:.18em}
+  .facts{display:block;border:0;background:none;
+    font-family:var(--display);font-size:11.5px;letter-spacing:.1em;
+    text-transform:uppercase;color:var(--muted);}
+  .facts div{display:inline;background:none;padding:0}
+  .facts dt{display:none}
+  .facts dd{display:inline;font-size:11.5px}
+  .facts div + div dd::before{content:" · ";color:var(--clay)}
+  section{padding:16px 0 4px}
+  h2{padding-bottom:6px;margin-bottom:4px}
+  .lede{font-size:12.5px;margin-bottom:14px}
+}
 .facts dt{
   font-family:var(--display);font-size:9.5px;letter-spacing:.16em;
   text-transform:uppercase;color:var(--muted);
@@ -91,7 +109,7 @@ h1{
   text-transform:uppercase;margin-top:2px;
 }
 
-section{padding:40px 0 4px}
+section{padding:26px 0 4px}
 h2{
   font-family:var(--display);font-weight:700;
   font-size:clamp(19px,4vw,28px);text-transform:uppercase;
@@ -154,54 +172,59 @@ td.place.top{color:var(--ball)}
 }
 
 /* ── сетка ── */
-.br{display:flex;flex-direction:column;gap:18px;padding-bottom:6px}
-.col{display:flex;flex-direction:column;justify-content:space-around;flex:1;min-width:0}
-@media (min-width:880px){
-  .br{flex-direction:row;gap:0;align-items:stretch}
-  .col{min-width:210px}
+.br{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:8px;align-items:stretch;
 }
+.col{display:flex;flex-direction:column;min-width:0}
 .col h3{
-  font-family:var(--display);font-size:10.5px;letter-spacing:.18em;
+  font-family:var(--display);font-size:9.5px;letter-spacing:.12em;
   text-transform:uppercase;color:var(--clay);
-  text-align:left;padding-bottom:9px;flex:none;
+  padding-bottom:8px;flex:none;text-align:center;
 }
-.col .inner{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:10px}
-.tie{position:relative;background:var(--ground-2);border-left:2px solid var(--ground-3);margin:0}
-@media (min-width:880px){ .tie{margin:0 14px} }
+.col .inner{
+  display:flex;flex-direction:column;justify-content:space-around;
+  flex:1;gap:8px;
+}
+.tie{
+  position:relative;background:var(--ground-2);
+  border-left:2px solid var(--ground-3);min-width:0;
+}
 .tie.done{border-left-color:var(--ball)}
 .tie .cap{
-  font-family:var(--display);font-size:9px;letter-spacing:.14em;
+  font-family:var(--display);font-size:8px;letter-spacing:.1em;
   text-transform:uppercase;color:var(--muted);
-  padding:6px 10px 3px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap;
+  padding:4px 6px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.tie .cap .when{color:var(--clay)}
+.tie .cap .when{display:none}
 .tie .row{
-  display:flex;justify-content:space-between;gap:8px;
-  padding:6px 10px;font-size:13px;
+  display:flex;justify-content:space-between;gap:5px;align-items:baseline;
+  padding:5px 6px;font-size:12px;line-height:1.15;
   border-top:1px solid rgba(237,231,223,.07);
 }
 .tie .row:first-of-type{border-top:0}
 .tie .row.w{color:var(--ball);font-weight:700}
-.tie .row .nm{overflow-wrap:anywhere;min-width:0}
-.tie .row .sc{font-family:var(--display);flex:none;letter-spacing:.04em}
-.tie .row .code{
-  font-family:var(--display);font-size:10px;color:var(--muted);margin-right:6px;
+.tie .row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
+.tie .row .nm.code{font-family:var(--display);color:var(--muted);letter-spacing:.08em}
+.tie .row .sc{font-family:var(--display);flex:none;font-size:11px}
+/* соединители */
+.col.r2 .tie::before,.col.r3 .tie::before{
+  content:"";position:absolute;left:-9px;top:50%;width:7px;
+  border-top:1px solid rgba(237,231,223,.2);
 }
-/* соединители — только на широком экране */
-@media (min-width:880px){
-  .col.r2 .tie,.col.r3 .tie{position:relative}
-  .col h3{text-align:center}
-  .col.r2 .tie::before,.col.r3 .tie::before{
-    content:"";position:absolute;left:-16px;top:50%;width:14px;
-    border-top:1px solid rgba(237,231,223,.22);
-  }
-  .col.r1 .tie::after,.col.r2 .tie::after{
-    content:"";position:absolute;right:-16px;top:50%;width:14px;
-    border-top:1px solid rgba(237,231,223,.22);
-  }
+.col.r1 .tie::after,.col.r2 .tie::after{
+  content:"";position:absolute;right:-9px;top:50%;width:7px;
+  border-top:1px solid rgba(237,231,223,.2);
 }
-.thirdwrap{margin-top:22px;max-width:340px}
-.thirdwrap .col{min-width:0}
+.thirdwrap{margin-top:16px;max-width:300px}
+.thirdwrap .tie .cap .when{display:inline;color:var(--clay);margin-left:6px}
+@media (min-width:700px){
+  .br{gap:16px}
+  .tie .row{font-size:14px;padding:7px 10px}
+  .tie .cap{font-size:9.5px;padding:6px 10px 2px}
+  .tie .cap .when{display:inline;color:var(--clay);margin-left:8px}
+  .col h3{font-size:11px;letter-spacing:.18em}
+}
 
 /* ── расписание ── */
 .day{margin-bottom:24px}
@@ -213,8 +236,8 @@ td.place.top{color:var(--ball)}
 }
 .day h3 span{font-size:10.5px;font-weight:400;letter-spacing:.14em;color:var(--muted)}
 .slotline{
-  font-family:var(--display);font-size:15px;letter-spacing:.1em;
-  color:var(--ball);padding:16px 0 5px;
+  font-family:var(--display);font-size:14px;letter-spacing:.1em;
+  color:var(--ball);padding:11px 0 3px;
   font-variant-numeric:tabular-nums;
 }
 .kolabel{
@@ -222,17 +245,17 @@ td.place.top{color:var(--ball)}
   text-transform:uppercase;color:var(--clay);
 }
 .match{
-  display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:center;
-  padding:9px 0;border-bottom:1px solid rgba(237,231,223,.07);
+  display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:baseline;
+  padding:7px 0;border-bottom:1px solid rgba(237,231,223,.07);
 }
 .tag{
-  font-family:var(--display);font-size:9.5px;letter-spacing:.08em;color:var(--muted);
-  background:var(--ground-2);padding:4px 7px;text-align:center;white-space:nowrap;min-width:52px;
+  font-family:var(--display);font-size:10px;letter-spacing:.06em;color:var(--muted);
+  background:var(--ground-2);padding:3px 6px;text-align:center;white-space:nowrap;
 }
-.pair{display:flex;flex-direction:column;gap:2px;min-width:0}
-.pl{display:flex;gap:8px;align-items:baseline;min-width:0;font-size:13.5px}
-.pl .slot{font-family:var(--display);font-size:10px;color:var(--muted);min-width:2.2em;flex:none}
-.pl.w{color:var(--ball);font-weight:700}
+.pair{min-width:0;font-size:13.5px;line-height:1.3}
+.pair .n{font-weight:500}
+.pair .n.w{color:var(--ball);font-weight:700}
+.pair .vs{color:var(--muted);margin:0 5px}
 .sc2{font-family:var(--display);font-size:14px;white-space:nowrap;text-align:right}
 .sc2.pending{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
 
@@ -259,10 +282,7 @@ footer{
 }
 footer span{font-family:var(--display);letter-spacing:.12em;text-transform:uppercase}
 
-@media (max-width:520px){
-  .match{grid-template-columns:auto 1fr}
-  .sc2{grid-column:2;text-align:left}
-}
+
 </style>
 </head>
 <body>
@@ -285,10 +305,10 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
 
 <div class="page">
 <nav><div class="wrap"><ul>
-  <li><a href="#groups">Группы</a></li>
-  <li><a href="#bracket">Основная сетка</a></li>
-  <li><a href="#schedule">Расписание</a></li>
-  <li><a href="#info">Регламент</a></li>
+  <li><a href="#groups"   data-tab="groups">Группы</a></li>
+  <li><a href="#bracket"  data-tab="bracket">Сетка</a></li>
+  <li><a href="#schedule" data-tab="schedule">Расписание</a></li>
+  <li><a href="#info"     data-tab="info">Регламент</a></li>
 </ul></div></nav>
 
 <div class="wrap">
@@ -303,26 +323,26 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
     </dl>
   </header>
 
-  <section id="groups">
+  <section id="groups" class="tab">
     <h2>Группы</h2>
     <p class="lede">Круговая система, каждый с каждым. Из каждой группы в основную сетку выходят двое. Место в группе проставляется только после того, как сыграны все её матчи: по числу побед, при равенстве — личная встреча, затем разница сетов и геймов.</p>
     <div id="groups-box"></div>
   </section>
 
-  <section id="bracket">
+  <section id="bracket" class="tab" hidden>
     <h2>Основная сетка</h2>
-    <p class="lede">Восемь участников, вышедших из групп. Расстановка по протоколу жеребьёвки: верхняя половина — А1, Б2, Б1, А2; нижняя — В1, Г2, В2, Г1.</p>
+    <p class="lede">Расстановка по протоколу жеребьёвки. Фамилии подставятся, как только группы доиграют.</p>
     <div class="br" id="bracket-box"></div>
     <div class="thirdwrap" id="third-box"></div>
   </section>
 
-  <section id="schedule">
+  <section id="schedule" class="tab" hidden>
     <h2>Расписание</h2>
     <p class="lede">Два корта. Время указано местное; расписание может корректироваться по ходу турнира.</p>
     <div id="schedule-box"></div>
   </section>
 
-  <section id="info">
+  <section id="info" class="tab" hidden>
     <h2>Регламент</h2>
     <div class="info">
       <div>
@@ -384,8 +404,8 @@ const RESULTS = {
   "ПФ1": "", "ПФ2": "", "Ф": "", "М3": ""
 };
 
-const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При счёте 1:1 по сетам играется решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 16:10";
+const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
+const UPDATED = "27 августа, 17:05";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -512,16 +532,16 @@ function side(ref){
     const t = table(ref.g);
     if(groupDone(ref.g)){
       const r = t.order[ref.pos - 1];
-      return { name: PLAYERS[r.code].name, code: ref.g + ref.pos, done:true };
+      return { name: PLAYERS[r.code].name, slot: ref.g + ref.pos, done:true };
     }
     return { name: (ref.pos === 1 ? "Победитель группы " : "2-е место группы ") + ref.g,
-             code: "", done:false };
+             slot: ref.g + ref.pos, done:false };
   }
   const src = ref.win || ref.lose;
   const r = parse(RESULTS[src]);
   const s = sides(src);
   if(!r) return { name:(ref.win ? "Победитель " : "Проигравший ") + KO[src].cap.replace(" · ", " "),
-                  code:"", done:false };
+                  slot:"—", done:false };
   return ref.win ? (r.aWon ? s.a : s.b) : (r.aWon ? s.b : s.a);
 }
 function sides(id){ const k = KO[id]; return { a: side(k.a), b: side(k.b) }; }
@@ -558,21 +578,26 @@ function renderGroups(){
         '<td class="place' + (done && r.place <= 2 ? " top" : "") + '">' +
           (done ? r.place : "—") + "</td></tr>";
     }).join("");
-    const note = done ? "" :
-      '<p class="gnote">Места появятся, когда группа доиграет все матчи.</p>';
+    const note = "";
     return '<div class="gcard"><h3>Группа «' + g + '» <em>' + cs.length + " участника</em></h3>" +
       '<div class="scroll"><table><thead>' + head + "</thead><tbody>" + body +
       "</tbody></table></div>" + note + "</div>";
   }).join("");
 }
 
+function shortName(n){
+  const p = String(n).trim().split(/\s+/);
+  return p.length > 1 ? p[0] + " " + p[1][0] + "." : p[0];
+}
 function tieBox(id){
   const k = KO[id], s = sides(id), r = parse(RESULTS[id]);
-  const row = (x, won, sc) =>
-    '<div class="row' + (won ? " w" : "") + '">' +
-      '<span class="nm">' + (x.code ? '<span class="code">' + x.code + "</span>" : "") +
-      esc(x.name) + "</span>" +
+  const row = (x, won, sc) => {
+    const solid = !!x.done;
+    const label = solid ? shortName(x.name) : (x.slot || "—");
+    return '<div class="row' + (won ? " w" : "") + '">' +
+      '<span class="nm' + (solid ? "" : " code") + '">' + esc(label) + "</span>" +
       '<span class="sc">' + (sc || "") + "</span></div>";
+  };
   const sa = r ? fmt(r) : "", sb = "";
   const when = WHEN[id] ? '<span class="when">' + WHEN[id] + "</span>" : "";
   return '<div class="tie' + (r ? " done" : "") + '"><div class="cap">' + k.cap + when + "</div>" +
@@ -599,18 +624,18 @@ function scheduleRow(m){
     const sd = sides(m.ko);
     a = sd.a; b = sd.b; r = parse(RESULTS[m.ko]);
   } else {
-    a = { name: PLAYERS[m.a].name, code: m.a };
-    b = { name: PLAYERS[m.b].name, code: m.b };
+    a = { name: PLAYERS[m.a].name, slot: m.a };
+    b = { name: PLAYERS[m.b].name, slot: m.b };
     r = between(m.a, m.b);
   }
-  const line = (x, won) => '<span class="pl' + (won ? " w" : "") + '">' +
-    '<span class="slot">' + (x.code || "") + "</span>" + esc(x.name) + "</span>";
+  const nm = (x, won) => '<span class="n' + (won ? " w" : "") + '">' +
+    esc(x.done === false && m.ko ? (x.slot || "—") : shortName(x.name)) + "</span>";
   const sc = r ? '<span class="sc2">' + fmt(r) + "</span>"
-               : '<span class="sc2 pending">не сыгран</span>';
-  const cap = m.ko ? '<span class="kolabel">' + KO[m.ko].cap.split(" · ")[0] + "</span>" : "";
-  return '<div class="match"><span class="tag">Корт ' + m.c + "</span>" +
-    '<span class="pair">' + cap + line(a, r && r.aWon) + line(b, r && !r.aWon) + "</span>" +
-    sc + "</div>";
+               : '<span class="sc2 pending">—</span>';
+  const cap = m.ko ? '<span class="kolabel">' + KO[m.ko].cap.split(" · ")[0] + "</span> " : "";
+  return '<div class="match"><span class="tag">К' + m.c + "</span>" +
+    '<span class="pair">' + cap + nm(a, r && r.aWon) +
+    '<span class="vs">—</span>' + nm(b, r && !r.aWon) + "</span>" + sc + "</div>";
 }
 
 function renderSchedule(){
@@ -638,6 +663,22 @@ renderGroups();
 renderBracket();
 renderSchedule();
 renderInfo();
+
+/* ═══════ вкладки ═══════ */
+const TABS = ["groups","bracket","schedule","info"];
+function showTab(id, push){
+  if(TABS.indexOf(id) < 0) id = "groups";
+  TABS.forEach(t => { $(t).hidden = (t !== id); });
+  document.querySelectorAll("nav a").forEach(a =>
+    a.classList.toggle("on", a.dataset.tab === id));
+  if(push && history.replaceState) history.replaceState(null, "", "#" + id);
+  window.scrollTo(0, 0);
+}
+document.querySelectorAll("nav a").forEach(a => {
+  a.addEventListener("click", e => { e.preventDefault(); showTab(a.dataset.tab, true); });
+});
+window.addEventListener("hashchange", () => showTab(location.hash.slice(1), false));
+showTab(location.hash.slice(1) || "groups", false);
 </script>
 </body>
 </html>
