@@ -12,18 +12,20 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --sand:#F6F2E8;
-  --sand-2:#EFE8DA;
-  --card:#FFFFFF;
-  --clay:#C2552C;
-  --clay-dk:#95391A;
-  --clay-lt:#E08A62;
-  --ball:#CFE81C;
-  --ball-dk:#5E7A00;
-  --ink:#1C1814;
-  --muted:#7C6F63;
-  --rule:rgba(28,24,20,.13);
-  --rule-soft:rgba(28,24,20,.07);
+  --sand:#F5F1E6;
+  --sand-2:#EBE3D3;
+  --card:#FFFDF8;
+  --clay:#B4492A;
+  --clay-dk:#7C2E15;
+  --clay-lt:#D9754B;
+  --court:#20402E;
+  --court-lt:#35624A;
+  --ball:#D6E63B;
+  --ball-dk:#4C6608;
+  --ink:#191612;
+  --muted:#79695B;
+  --rule:rgba(25,22,18,.13);
+  --rule-soft:rgba(25,22,18,.06);
   --display:"Oswald","Helvetica Neue Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
@@ -40,6 +42,11 @@ body{
 /* ── фоновая теннисная графика ── */
 .court{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .court svg{position:absolute;inset:0;width:100%;height:100%}
+.court::after{
+  content:"";position:absolute;inset:0;
+  background-image:url("data:image/svg+xml;utf8,%3Csvg xmlns='http://www.w3.org/2000/svg' width='140' height='140'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.8' numOctaves='3'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='140' height='140' filter='url(%23g)' opacity='0.5'/%3E%3C/svg%3E");
+  opacity:.045;
+}
 
 .page{position:relative;z-index:1}
 
@@ -47,17 +54,25 @@ body{
 .hero{
   position:relative;overflow:hidden;
   background:linear-gradient(160deg,var(--clay) 0%,var(--clay-dk) 100%);
-  color:#FFF7EE;padding:26px 0 24px;
+  color:#FFF7EE;padding:26px 0 30px;
 }
 .hero .lines{position:absolute;inset:0;opacity:.5}
+.hero .grain{position:absolute;inset:0;width:100%;height:100%;opacity:.16;mix-blend-mode:overlay}
+.hero::after{
+  content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(120% 90% at 20% 0%,rgba(255,220,190,.16),transparent 62%),
+             linear-gradient(180deg,transparent 60%,rgba(60,20,8,.22) 100%);
+}
 .hero .ballart{
-  position:absolute;right:-58px;top:-50px;width:172px;height:172px;opacity:.3;
+  position:absolute;right:-34px;bottom:-42px;width:146px;height:146px;
+  filter:drop-shadow(0 10px 20px rgba(60,20,8,.34));
 }
 @media (min-width:700px){
   h1{padding-right:0}
-  .hero .ballart{right:24px;top:-34px;width:210px;height:210px;opacity:.42}
+  .hero .ballart{right:48px;bottom:-52px;width:205px;height:205px}
 }
-.hero .wrap{position:relative;z-index:2}
+.hero .wrap{position:relative;z-index:3}
+.hero .ballart{z-index:2}
 .discipline{
   font-family:var(--display);font-weight:500;font-size:10px;letter-spacing:.24em;
   text-transform:uppercase;color:#F7C9B2;
@@ -66,7 +81,7 @@ h1{
   font-family:var(--display);font-weight:700;
   font-size:clamp(27px,7.4vw,58px);line-height:.98;
   text-transform:uppercase;letter-spacing:.005em;
-  margin:7px 0 12px;text-wrap:balance;max-width:13ch;padding-right:52px;
+  margin:7px 0 12px;text-wrap:balance;max-width:13ch;
 }
 .facts{display:flex;flex-wrap:wrap;gap:6px}
 .facts div{
@@ -93,18 +108,20 @@ nav a{
   text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;
 }
 nav a:hover,nav a:focus-visible{color:var(--ink)}
-nav a.on{color:var(--clay);border-bottom-color:var(--ball);font-weight:600}
+nav a.on{color:var(--clay);border-bottom-color:var(--clay);font-weight:600}
 
 section{padding:22px 0 8px}
 h2{
   font-family:var(--display);font-weight:700;
   font-size:clamp(21px,5vw,32px);text-transform:uppercase;letter-spacing:.01em;
-  display:inline-block;position:relative;margin-bottom:10px;
+  display:flex;align-items:center;gap:11px;margin-bottom:10px;color:var(--court);
 }
-h2::after{
-  content:"";position:absolute;left:0;right:-6px;bottom:2px;height:9px;
-  background:var(--ball);z-index:-1;
+h2::before{
+  content:"";width:15px;height:15px;border-radius:50%;flex:none;
+  background:radial-gradient(circle at 34% 30%,#EAF37E 0%,var(--ball) 55%,#9DAF23 100%);
+  box-shadow:0 1px 3px rgba(25,22,18,.25);
 }
+h2::after{content:"";flex:1;height:2px;background:var(--rule)}
 .lede{color:var(--muted);font-size:13px;margin-bottom:16px;max-width:68ch}
 
 /* ── группы ── */
@@ -120,7 +137,8 @@ h2::after{
 }
 .gcard h3 em{
   font-style:normal;font-size:10px;letter-spacing:.12em;font-weight:500;
-  background:var(--ball);color:var(--ink);padding:2px 7px;
+  background:rgba(255,247,238,.2);border:1px solid rgba(255,247,238,.35);
+  color:#FFF3E7;padding:2px 8px;
 }
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
@@ -140,7 +158,7 @@ tr:last-child td{border-bottom:0}
 th.n{padding-left:10px}
 td.n{
   font-family:var(--display);font-weight:600;font-size:13px;
-  color:var(--clay);width:1.4em;padding-left:10px;
+  color:var(--muted);width:1.4em;padding-left:10px;
 }
 td.who{
   text-align:left;font-weight:600;white-space:normal;
@@ -149,20 +167,20 @@ td.who{
 td.who small{display:block;color:var(--muted);font-size:10.5px;font-weight:400;margin-top:1px}
 td.who .sd{
   display:inline-block;font-family:var(--display);font-size:10px;font-weight:600;
-  background:var(--ball);color:var(--ink);padding:1px 5px;margin-left:5px;
-  vertical-align:1px;letter-spacing:.05em;
+  background:var(--court);color:#F2EFE4;padding:1px 6px;margin-left:5px;
+  vertical-align:1px;letter-spacing:.05em;border-radius:2px;
 }
 td.self{background:repeating-linear-gradient(45deg,var(--rule-soft) 0 4px,transparent 4px 9px)}
 td.cell{
   font-family:var(--display);font-weight:500;font-size:12px;
   white-space:normal;line-height:1.25;padding-left:3px;padding-right:3px;color:var(--muted);
 }
-td.cellw{color:var(--ball-dk);font-weight:700}
+td.cellw{color:var(--court);font-weight:700}
 td.pts{font-family:var(--display);font-size:15px;font-weight:600}
 td.place{font-family:var(--display);font-size:17px;font-weight:700;padding-right:12px}
 td.place.top span{
-  display:inline-block;min-width:24px;line-height:24px;
-  background:var(--ball);color:var(--ink);
+  display:inline-block;min-width:26px;line-height:26px;border-radius:50%;
+  background:var(--court);color:#F2EFE4;
 }
 th.mx,td.mx{display:none}
 @media (min-width:880px){
@@ -186,7 +204,7 @@ th.mx,td.mx{display:none}
   border:1px solid var(--rule);border-left:3px solid var(--sand-2);
   box-shadow:0 1px 6px rgba(28,24,20,.05);min-width:0;
 }
-.tie.done{border-left-color:var(--ball)}
+.tie.done{border-left-color:var(--court)}
 .tie .cap{
   font-family:var(--display);font-size:8.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);
@@ -199,7 +217,11 @@ th.mx,td.mx{display:none}
   border-top:1px solid var(--rule-soft);
 }
 .tie .row:first-of-type{border-top:0}
-.tie .row.w{background:var(--ball);font-weight:700;color:var(--ink)}
+.tie .row.w{
+  background:linear-gradient(90deg,rgba(32,64,46,.10),rgba(32,64,46,.03));
+  font-weight:700;color:var(--court);
+  box-shadow:inset 3px 0 0 var(--ball);
+}
 .tie .row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .tie .row .nm.code{font-family:var(--display);color:var(--muted);letter-spacing:.08em}
 .tie .row.w .nm.code{color:var(--ink)}
@@ -258,7 +280,7 @@ th.mx,td.mx{display:none}
 }
 .pair{min-width:0;font-size:13.5px;line-height:1.3}
 .pair .n{font-weight:500}
-.pair .n.w{color:var(--ball-dk);font-weight:700}
+.pair .n.w{color:var(--court);font-weight:700}
 .pair .vs{color:var(--muted);margin:0 5px}
 .sc2{font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap;text-align:right}
 .sc2.pending{font-size:10.5px;font-weight:400;letter-spacing:.1em;text-transform:uppercase}
@@ -271,7 +293,7 @@ th.mx,td.mx{display:none}
 .info{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .info div{
   background:var(--card);padding:13px 15px;
-  border:1px solid var(--rule);border-top:3px solid var(--ball);
+  border:1px solid var(--rule);border-top:3px solid var(--court);
 }
 .info h4{
   font-family:var(--display);font-weight:600;font-size:10.5px;
@@ -291,6 +313,42 @@ footer{
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
 }
 footer span{font-family:var(--display);letter-spacing:.12em;text-transform:uppercase}
+
+/* ── движение ── */
+@keyframes rise{from{opacity:0;transform:translateY(12px)}to{opacity:1;transform:none}}
+@keyframes floatball{
+  0%,100%{transform:translateY(0) rotate(-4deg)}
+  50%{transform:translateY(-15px) rotate(6deg)}
+}
+@keyframes serve{
+  from{opacity:0;transform:translateY(-24px) scale(.85)}
+  to{opacity:1;transform:none}
+}
+@keyframes sweep{from{transform:scaleX(0)}to{transform:scaleX(1)}}
+.tab{animation:rise .36s cubic-bezier(.2,.7,.3,1) both}
+.gcard,.day,.info div{animation:rise .42s cubic-bezier(.2,.7,.3,1) both}
+.gcard:nth-child(2),.day:nth-child(2){animation-delay:.06s}
+.gcard:nth-child(3),.day:nth-child(3){animation-delay:.12s}
+.gcard:nth-child(4){animation-delay:.18s}
+.info div:nth-child(2){animation-delay:.05s}
+.info div:nth-child(3){animation-delay:.1s}
+.info div:nth-child(4){animation-delay:.15s}
+.col{animation:rise .4s cubic-bezier(.2,.7,.3,1) both}
+.col.r2{animation-delay:.08s}
+.col.r3{animation-delay:.16s}
+.thirdrow{animation:rise .4s cubic-bezier(.2,.7,.3,1) .24s both}
+.hero .ballart{animation:serve .8s cubic-bezier(.2,.8,.3,1) both,floatball 7s ease-in-out 1s infinite}
+.hero .wrap>*{animation:rise .5s cubic-bezier(.2,.7,.3,1) both}
+.hero h1{animation-delay:.06s}
+.hero .facts{animation-delay:.13s}
+h2::after{transform-origin:left;animation:sweep .5s cubic-bezier(.2,.7,.3,1) .1s both}
+.gcard,.tie,.info div{transition:transform .18s ease,box-shadow .18s ease}
+.gcard:hover,.info div:hover{transform:translateY(-2px);box-shadow:0 6px 18px rgba(25,22,18,.10)}
+.tie:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(25,22,18,.10)}
+nav a{transition:color .15s ease,border-color .15s ease}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
 </style>
 </head>
 <body>
@@ -338,11 +396,34 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
       <line x1="20" y1="120" x2="380" y2="120"/>
     </g>
   </svg>
-  <svg class="ballart" viewBox="-40 -40 80 80" aria-hidden="true">
-    <circle cx="0" cy="0" r="33" fill="#CFE81C"/>
-    <path d="M-33 0a44 44 0 0 1 28-41 44 44 0 0 0 0 82 44 44 0 0 1-28-41z" fill="none" stroke="#FFF7EE" stroke-width="3"/>
-    <path d="M33 0a44 44 0 0 0-28-41 44 44 0 0 1 0 82 44 44 0 0 0 28-41z" fill="none" stroke="#FFF7EE" stroke-width="3"/>
+  <svg class="ballart" viewBox="-50 -50 100 100" aria-hidden="true">
+    <defs>
+      <radialGradient id="bg1" cx="34%" cy="28%" r="72%">
+        <stop offset="0%"  stop-color="#F2F7A8"/>
+        <stop offset="42%" stop-color="#D6E63B"/>
+        <stop offset="82%" stop-color="#A7BB18"/>
+        <stop offset="100%" stop-color="#6E8109"/>
+      </radialGradient>
+      <filter id="fuzz" x="-25%" y="-25%" width="150%" height="150%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="4" seed="7" result="n"/>
+        <feDisplacementMap in="SourceGraphic" in2="n" scale="3.2" xChannelSelector="R" yChannelSelector="G"/>
+      </filter>
+      <filter id="grain">
+        <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="3" seed="3"/>
+        <feColorMatrix type="saturate" values="0"/>
+      </filter>
+    </defs>
+    <g filter="url(#fuzz)">
+      <circle cx="0" cy="0" r="40" fill="url(#bg1)"/>
+      <path d="M-40 0a52 52 0 0 1 33-48 52 52 0 0 0 0 96 52 52 0 0 1-33-48z"
+            fill="none" stroke="#FBF8EC" stroke-width="3.4"/>
+      <path d="M40 0a52 52 0 0 0-33-48 52 52 0 0 1 0 96 52 52 0 0 0 33-48z"
+            fill="none" stroke="#FBF8EC" stroke-width="3.4"/>
+    </g>
+    <circle cx="0" cy="0" r="40" fill="none" stroke="rgba(0,0,0,.16)" stroke-width="1.4"/>
+    <circle cx="0" cy="0" r="40" filter="url(#grain)" opacity=".16"/>
   </svg>
+  <svg class="grain" aria-hidden="true"><rect width="100%" height="100%" filter="url(#grain)"/></svg>
   <div class="wrap">
     <div class="discipline">Основной турнир · теннис, одиночный разряд</div>
     <h1>Чемпионат Селижаровского района</h1>
@@ -445,7 +526,7 @@ const RESULTS = {
 };
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 17:03 мск";
+const UPDATED = "27 августа, 17:26 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
