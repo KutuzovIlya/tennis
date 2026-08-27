@@ -326,6 +326,13 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
 }
 .intro.fade{animation:introOut 1s ease forwards}
 @keyframes introOut{to{opacity:0;visibility:hidden}}
+.intro .introvid{
+  position:absolute;inset:0;width:100%;height:100%;
+  object-fit:cover;object-position:var(--vidpos,50% 50%);
+  opacity:0;transition:opacity .5s ease;background:#3E1607;
+}
+.intro.video .introvid{opacity:1}
+.intro.video .racket,.intro.video .iball,.intro.video .flash{display:none}
 .intro .racket{
   position:absolute;width:min(52vmin,320px);height:auto;
   transform-origin:50% 88%;
@@ -426,6 +433,8 @@ nav a{transition:color .15s ease,border-color .15s ease}
 <body>
 
 <div class="intro" id="intro">
+  <video class="introvid" id="introvid" playsinline muted preload="auto"
+         poster="" aria-hidden="true"></video>
   <svg class="racket" viewBox="-70 -140 140 280" aria-hidden="true">
     <defs>
       <linearGradient id="frame" x1="0" y1="0" x2="1" y2="1">
@@ -653,7 +662,7 @@ const RESULTS = {
 };
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 18:10 мск";
+const UPDATED = "27 августа, 18:43 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -1038,16 +1047,37 @@ renderInfo();
     requestAnimationFrame(frame);
   }
 
-  later(() => box.classList.add("hold"), 1900);   // мяч замер во весь экран
-  later(() => {                                    // удар о грунт
-    box.classList.add("burst");
-    shatter();
-  }, 2820);
-  later(() => {                                    // страница проступает сквозь крошку
-    box.classList.add("fade");
-    document.body.classList.remove("locked");
-  }, 3160);
-  later(() => box.remove(), 4300);
+  function outro(delay){                           // грунтовая крошка и выход на страницу
+    later(() => { box.classList.add("burst"); shatter(); }, delay);
+    later(() => {
+      box.classList.add("fade");
+      document.body.classList.remove("locked");
+    }, delay + 340);
+    later(() => box.remove(), delay + 1480);
+  }
+
+  function drawnIntro(){                           // ракетка бьёт, мяч летит, разлетается
+    later(() => box.classList.add("hold"), 1900);
+    outro(2820);
+  }
+
+  /* если рядом лежит intro.mp4 — заставкой идёт видео */
+  const vid = document.getElementById("introvid");
+  let decided = false;
+  function useDrawn(){ if(decided) return; decided = true; vid.remove(); drawnIntro(); }
+  function useVideo(){
+    if(decided) return; decided = true;
+    box.classList.add("video");
+    const dur = isFinite(vid.duration) && vid.duration > 0.4 ? vid.duration : 6;
+    const show = Math.min(dur, 6.5);
+    vid.play().catch(useDrawn);
+    outro(Math.max(show * 1000 - 500, 900));
+  }
+  vid.addEventListener("loadeddata", useVideo, { once: true });
+  vid.addEventListener("error", useDrawn, { once: true });
+  vid.src = "intro.mp4";
+  vid.load();
+  setTimeout(() => { if(!decided) useDrawn(); }, 1400);
 })();
 
 /* ═══════ вкладки ═══════ */
