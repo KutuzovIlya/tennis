@@ -180,6 +180,7 @@ th.mx,td.mx{display:none}
   text-transform:uppercase;color:var(--clay);padding-bottom:7px;flex:none;text-align:center;
 }
 .col .inner{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:9px}
+.col.r3 .inner{justify-content:center}
 .tie{
   position:relative;background:var(--card);
   border:1px solid var(--rule);border-left:3px solid var(--sand-2);
@@ -206,8 +207,13 @@ th.mx,td.mx{display:none}
   font-family:var(--display);font-weight:700;flex:none;margin-left:auto;
   font-size:11.5px;letter-spacing:.02em;
 }
-.third{margin-top:10px;flex:none}
-.third .tie::before,.third .tie::after{display:none}
+.thirdrow{
+  display:grid;grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:9px;margin-top:26px;
+}
+.thirdrow > .tie{grid-column:3}
+.thirdrow .tie::before,.thirdrow .tie::after{display:none}
+@media (min-width:700px){.thirdrow{gap:18px;margin-top:32px}}
 @media (min-width:700px){
   .col h3{font-size:11px;letter-spacing:.18em}
   .tie .cap{font-size:9.5px;padding:5px 10px 2px}
@@ -367,6 +373,7 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
     <h2>Основная сетка</h2>
     <p class="lede">Расстановка по протоколу жеребьёвки. Фамилии подставятся, как только группы доиграют.</p>
     <div class="br" id="bracket-box"></div>
+  <div class="thirdrow" id="third-box"></div>
     </section>
 
   <section id="schedule" class="tab" hidden>
@@ -438,7 +445,7 @@ const RESULTS = {
 };
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 16:44 мск";
+const UPDATED = "27 августа, 17:03 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -652,9 +659,8 @@ function renderBracket(){
   ];
   $("bracket-box").innerHTML = cols.map(([cap, ids, cls]) =>
     '<div class="col ' + cls + '"><h3>' + cap + '</h3><div class="inner">' +
-    ids.map(tieBox).join("") + "</div>" +
-    (cls === "r3" ? '<div class="third">' + tieBox("М3") + "</div>" : "") +
-    "</div>").join("");
+    ids.map(tieBox).join("") + "</div></div>").join("");
+  $("third-box").innerHTML = tieBox("М3");
 }
 
 function scheduleRow(m){
