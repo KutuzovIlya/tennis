@@ -12,246 +12,230 @@
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Oswald:wght@400;500;600;700&family=IBM+Plex+Sans:wght@400;500;600;700&display=swap">
 <style>
 :root{
-  --ground:#14110F;
-  --ground-2:#1E1917;
-  --ground-3:#2A2321;
-  --clay:#C1603A;
-  --clay-deep:#8E4227;
-  --ball:#D7E64A;
-  --line:#EDE7DF;
-  --muted:#8B7F76;
+  --sand:#F6F2E8;
+  --sand-2:#EFE8DA;
+  --card:#FFFFFF;
+  --clay:#C2552C;
+  --clay-dk:#95391A;
+  --clay-lt:#E08A62;
+  --ball:#CFE81C;
+  --ball-dk:#5E7A00;
+  --ink:#1C1814;
+  --muted:#7C6F63;
+  --rule:rgba(28,24,20,.13);
+  --rule-soft:rgba(28,24,20,.07);
   --display:"Oswald","Helvetica Neue Condensed","Arial Narrow",system-ui,sans-serif;
   --body:"IBM Plex Sans",system-ui,-apple-system,"Segoe UI",sans-serif;
 }
 *{box-sizing:border-box;margin:0;padding:0}
+[hidden]{display:none!important}
 html{scroll-behavior:auto}
 body{
-  background:var(--ground);color:var(--line);
+  background:var(--sand);color:var(--ink);
   font-family:var(--body);line-height:1.5;
   -webkit-font-smoothing:antialiased;min-height:100%;
 }
+.wrap{max-width:1080px;margin:0 auto;padding:0 18px}
 
-/* ── теннисный фон: грунтовый корт сверху ── */
-.court{
-  position:fixed;inset:0;z-index:0;pointer-events:none;
-  overflow:hidden;
-}
-.court svg{
-  position:absolute;left:50%;top:-6vh;transform:translateX(-50%) rotate(-7deg);
-  width:min(1500px,150vw);height:auto;opacity:.16;
-}
-.court::after{
-  content:"";position:absolute;inset:0;
-  background:linear-gradient(180deg,rgba(20,17,15,.25) 0%,rgba(20,17,15,.86) 42%,var(--ground) 78%);
-}
+/* ── фоновая теннисная графика ── */
+.court{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden}
+.court svg{position:absolute;inset:0;width:100%;height:100%}
+
 .page{position:relative;z-index:1}
-.wrap{max-width:1080px;margin:0 auto;padding:0 20px}
 
-/* ── навигация ── */
-nav{
-  position:sticky;top:0;z-index:30;
-  background:rgba(20,17,15,.92);
-  backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);
-  border-bottom:1px solid rgba(237,231,223,.12);
+/* ── баннер ── */
+.hero{
+  position:relative;overflow:hidden;
+  background:linear-gradient(160deg,var(--clay) 0%,var(--clay-dk) 100%);
+  color:#FFF7EE;padding:26px 0 24px;
 }
-nav ul{display:flex;gap:2px;list-style:none;overflow-x:auto}
-nav a{
-  display:block;padding:13px 13px;white-space:nowrap;
-  font-family:var(--display);font-size:12px;letter-spacing:.14em;
-  text-transform:uppercase;color:var(--muted);text-decoration:none;
-  border-bottom:2px solid transparent;
+.hero .lines{position:absolute;inset:0;opacity:.5}
+.hero .ballart{
+  position:absolute;right:-58px;top:-50px;width:172px;height:172px;opacity:.3;
 }
-nav a:hover,nav a:focus-visible{color:var(--line)}
-nav a.on{color:var(--ball);border-bottom-color:var(--ball)}
-nav ul{scrollbar-width:none}
-nav ul::-webkit-scrollbar{display:none}
-
-/* ── шапка ── */
-header{padding:26px 0 20px;text-align:center}
+@media (min-width:700px){
+  h1{padding-right:0}
+  .hero .ballart{right:24px;top:-34px;width:210px;height:210px;opacity:.42}
+}
+.hero .wrap{position:relative;z-index:2}
 .discipline{
-  font-family:var(--display);font-size:10.5px;letter-spacing:.26em;
-  text-transform:uppercase;color:var(--clay);
+  font-family:var(--display);font-weight:500;font-size:10px;letter-spacing:.24em;
+  text-transform:uppercase;color:#F7C9B2;
 }
 h1{
   font-family:var(--display);font-weight:700;
-  font-size:clamp(28px,6.4vw,60px);line-height:1.02;
-  text-transform:uppercase;margin:8px 0 14px;text-wrap:balance;
+  font-size:clamp(27px,7.4vw,58px);line-height:.98;
+  text-transform:uppercase;letter-spacing:.005em;
+  margin:7px 0 12px;text-wrap:balance;max-width:13ch;padding-right:52px;
 }
-.facts{
-  display:flex;flex-wrap:wrap;justify-content:center;
-  gap:1px;background:rgba(237,231,223,.12);
-  border:1px solid rgba(237,231,223,.12);
-}
+.facts{display:flex;flex-wrap:wrap;gap:6px}
 .facts div{
-  background:var(--ground-2);padding:9px 16px;flex:1 1 150px;min-width:0;
+  background:rgba(255,247,238,.14);border:1px solid rgba(255,247,238,.22);
+  padding:4px 9px;
 }
-@media (max-width:480px){
-  .match{grid-template-columns:auto 1fr}
-  .sc2{grid-column:2;text-align:left;padding-top:2px}
-}
-@media (max-width:699px){
-  header{padding:16px 0 14px}
-  h1{font-size:clamp(23px,6.6vw,34px);margin:5px 0 10px}
-  .discipline{font-size:9px;letter-spacing:.18em}
-  .facts{display:block;border:0;background:none;
-    font-family:var(--display);font-size:11.5px;letter-spacing:.1em;
-    text-transform:uppercase;color:var(--muted);}
-  .facts div{display:inline;background:none;padding:0}
-  .facts dt{display:none}
-  .facts dd{display:inline;font-size:11.5px}
-  .facts div + div dd::before{content:" · ";color:var(--clay)}
-  section{padding:16px 0 4px}
-  h2{padding-bottom:6px;margin-bottom:4px}
-  .lede{font-size:12.5px;margin-bottom:14px}
-}
-.facts dt{
-  font-family:var(--display);font-size:9.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--muted);
-}
+.facts dt{display:none}
 .facts dd{
-  font-family:var(--display);font-size:14px;letter-spacing:.05em;
-  text-transform:uppercase;margin-top:2px;
+  font-family:var(--display);font-weight:500;font-size:11.5px;
+  letter-spacing:.1em;text-transform:uppercase;color:#FFF3E7;
 }
 
-section{padding:26px 0 4px}
+/* ── вкладки ── */
+nav{
+  position:sticky;top:0;z-index:30;
+  background:var(--sand);border-bottom:1px solid var(--rule);
+  box-shadow:0 2px 12px rgba(28,24,20,.05);
+}
+nav ul{display:flex;gap:0;list-style:none;overflow-x:auto;scrollbar-width:none;justify-content:space-between}
+nav ul::-webkit-scrollbar{display:none}
+nav a{
+  display:block;padding:13px 10px;white-space:nowrap;text-decoration:none;
+  font-family:var(--display);font-weight:500;font-size:12px;letter-spacing:.08em;
+  text-transform:uppercase;color:var(--muted);border-bottom:3px solid transparent;
+}
+nav a:hover,nav a:focus-visible{color:var(--ink)}
+nav a.on{color:var(--clay);border-bottom-color:var(--ball);font-weight:600}
+
+section{padding:22px 0 8px}
 h2{
   font-family:var(--display);font-weight:700;
-  font-size:clamp(19px,4vw,28px);text-transform:uppercase;
-  letter-spacing:.02em;
-  padding-bottom:8px;margin-bottom:6px;
-  border-bottom:2px solid var(--clay);
+  font-size:clamp(21px,5vw,32px);text-transform:uppercase;letter-spacing:.01em;
+  display:inline-block;position:relative;margin-bottom:10px;
 }
-.lede{color:var(--muted);font-size:13.5px;margin-bottom:18px;max-width:70ch}
+h2::after{
+  content:"";position:absolute;left:0;right:-6px;bottom:2px;height:9px;
+  background:var(--ball);z-index:-1;
+}
+.lede{color:var(--muted);font-size:13px;margin-bottom:16px;max-width:68ch}
 
-/* ── таблицы групп ── */
-.gcard{margin-bottom:22px;background:var(--ground-2);border-top:2px solid var(--clay)}
-.gcard h3{
-  font-family:var(--display);font-weight:600;font-size:14px;
-  letter-spacing:.2em;text-transform:uppercase;color:var(--clay);
-  padding:12px 16px 9px;display:flex;justify-content:space-between;gap:10px;
+/* ── группы ── */
+.gcard{
+  margin-bottom:16px;background:var(--card);
+  border:1px solid var(--rule);box-shadow:0 2px 10px rgba(28,24,20,.05);
 }
-.gcard h3 em{font-style:normal;color:var(--muted);font-weight:400;letter-spacing:.1em}
+.gcard h3{
+  background:var(--clay);color:#FFF3E7;
+  font-family:var(--display);font-weight:600;font-size:14px;
+  letter-spacing:.2em;text-transform:uppercase;
+  padding:9px 14px;display:flex;justify-content:space-between;align-items:center;gap:10px;
+}
+.gcard h3 em{
+  font-style:normal;font-size:10px;letter-spacing:.12em;font-weight:500;
+  background:var(--ball);color:var(--ink);padding:2px 7px;
+}
 .scroll{overflow-x:auto;-webkit-overflow-scrolling:touch}
 table{width:100%;border-collapse:collapse;font-size:13.5px}
 th{
-  font-family:var(--display);font-weight:400;font-size:9.5px;
-  letter-spacing:.1em;text-transform:uppercase;color:var(--muted);
-  padding:7px 8px;border-bottom:1px solid rgba(237,231,223,.16);
-  text-align:center;white-space:nowrap;
-}
-td{
-  padding:10px 8px;text-align:center;white-space:nowrap;
-  border-bottom:1px solid rgba(237,231,223,.07);
-  font-variant-numeric:tabular-nums;
+  font-family:var(--display);font-weight:600;font-size:11px;
+  letter-spacing:.1em;text-transform:uppercase;color:var(--clay);
+  padding:8px 5px;border-bottom:2px solid var(--rule);
+  text-align:center;white-space:nowrap;background:var(--sand-2);
 }
 th.l,td.l{text-align:left}
-td.who{font-weight:500;white-space:normal;line-height:1.22;padding-left:8px;min-width:88px}
+td{
+  padding:9px 5px;text-align:center;
+  border-bottom:1px solid var(--rule-soft);
+  font-variant-numeric:tabular-nums;
+}
+tr:last-child td{border-bottom:0}
+th.n{padding-left:10px}
+td.n{
+  font-family:var(--display);font-weight:600;font-size:13px;
+  color:var(--clay);width:1.4em;padding-left:10px;
+}
+td.who{
+  text-align:left;font-weight:600;white-space:normal;
+  line-height:1.2;padding-left:8px;min-width:88px;
+}
 td.who small{display:block;color:var(--muted);font-size:10.5px;font-weight:400;margin-top:1px}
 td.who .sd{
-  font-family:var(--display);font-size:10.5px;color:var(--clay);
-  border:1px solid rgba(193,96,58,.5);padding:0 4px;margin-left:6px;
-  vertical-align:2px;letter-spacing:.06em;
+  display:inline-block;font-family:var(--display);font-size:10px;font-weight:600;
+  background:var(--ball);color:var(--ink);padding:1px 5px;margin-left:5px;
+  vertical-align:1px;letter-spacing:.05em;
 }
-
-
-td.pts{font-family:var(--display);font-size:15px}
-td.place{font-family:var(--display);font-size:17px;font-weight:600;padding-right:14px}
-
-@media (max-width:420px){
-  table{font-size:12.5px}
-  th{font-size:9px;padding:6px 4px}
-  td{padding:9px 4px}
-  td.who{padding-left:12px}
-  td.place{padding-right:12px}
-}
-td.place.top{color:var(--ball)}
-.pending{color:var(--muted);opacity:.45}
-td.n{color:var(--muted);font-family:var(--display);font-size:11px;width:1.4em;padding-left:10px}
-th.n{padding-left:10px}
-td.self{background:repeating-linear-gradient(45deg,rgba(237,231,223,.06) 0 4px,transparent 4px 8px)}
+td.self{background:repeating-linear-gradient(45deg,var(--rule-soft) 0 4px,transparent 4px 9px)}
 td.cell{
-  font-family:var(--display);font-size:11.5px;letter-spacing:.02em;
-  white-space:normal;line-height:1.25;padding-left:3px;padding-right:3px;
+  font-family:var(--display);font-weight:500;font-size:12px;
+  white-space:normal;line-height:1.25;padding-left:3px;padding-right:3px;color:var(--muted);
 }
-td.cellw{color:var(--ball)}
+td.cellw{color:var(--ball-dk);font-weight:700}
+td.pts{font-family:var(--display);font-size:15px;font-weight:600}
+td.place{font-family:var(--display);font-size:17px;font-weight:700;padding-right:12px}
+td.place.top span{
+  display:inline-block;min-width:24px;line-height:24px;
+  background:var(--ball);color:var(--ink);
+}
 th.mx,td.mx{display:none}
 @media (min-width:880px){
   th.mx,td.mx{display:table-cell}
   td.cell{font-size:13px;white-space:nowrap}
 }
+.pending{color:var(--muted);opacity:.5}
+
 /* ── сетка ── */
-.br{display:grid;grid-template-columns:1fr;gap:14px;align-items:stretch}
-@media (min-width:700px){
-  .br{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
-}
+.br{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:stretch}
+@media (min-width:700px){.br{gap:18px}}
 .col{display:flex;flex-direction:column;min-width:0}
 .col h3{
-  font-family:var(--display);font-size:10.5px;letter-spacing:.16em;
-  text-transform:uppercase;color:var(--clay);
-  padding-bottom:7px;flex:none;text-align:left;
+  font-family:var(--display);font-weight:600;font-size:9.5px;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--clay);padding-bottom:7px;flex:none;text-align:center;
 }
-.col .inner{
-  display:flex;flex-direction:column;justify-content:space-around;
-  flex:1;gap:8px;
-}
+.col .inner{display:flex;flex-direction:column;justify-content:space-around;flex:1;gap:9px}
 .tie{
-  position:relative;background:var(--ground-2);
-  border-left:2px solid var(--ground-3);min-width:0;
+  position:relative;background:var(--card);
+  border:1px solid var(--rule);border-left:3px solid var(--sand-2);
+  box-shadow:0 1px 6px rgba(28,24,20,.05);min-width:0;
 }
 .tie.done{border-left-color:var(--ball)}
 .tie .cap{
-  font-family:var(--display);font-size:9px;letter-spacing:.12em;
+  font-family:var(--display);font-size:8.5px;letter-spacing:.08em;
   text-transform:uppercase;color:var(--muted);
-  padding:5px 10px 2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+  padding:4px 7px 1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
 }
-.tie .cap .when{color:var(--clay);margin-left:8px}
+.tie .cap .when{display:none;color:var(--clay);margin-left:8px}
 .tie .row{
-  display:flex;justify-content:space-between;gap:8px;align-items:baseline;
-  padding:6px 10px;font-size:13.5px;line-height:1.2;
-  border-top:1px solid rgba(237,231,223,.07);
+  display:flex;flex-wrap:wrap;justify-content:space-between;gap:0 6px;align-items:baseline;
+  padding:5px 7px;font-size:12.5px;line-height:1.25;
+  border-top:1px solid var(--rule-soft);
 }
 .tie .row:first-of-type{border-top:0}
-.tie .row.w{color:var(--ball);font-weight:700}
+.tie .row.w{background:var(--ball);font-weight:700;color:var(--ink)}
 .tie .row .nm{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;min-width:0}
 .tie .row .nm.code{font-family:var(--display);color:var(--muted);letter-spacing:.08em}
-.tie .row.w .nm.code{color:var(--ball)}
+.tie .row.w .nm.code{color:var(--ink)}
 .tie .row .sc{
-  font-family:var(--display);flex:none;font-size:13px;letter-spacing:.04em;
-}
-
-/* соединители */
-@media (min-width:700px){
-  .col.r2 .tie::before,.col.r3 .tie::before{
-    content:"";position:absolute;left:-17px;top:50%;width:15px;
-    border-top:1px solid rgba(237,231,223,.2);
-  }
-  .col.r1 .tie::after,.col.r2 .tie::after{
-    content:"";position:absolute;right:-17px;top:50%;width:15px;
-    border-top:1px solid rgba(237,231,223,.2);
-  }
+  font-family:var(--display);font-weight:700;flex:none;margin-left:auto;
+  font-size:11.5px;letter-spacing:.02em;
 }
 .third{margin-top:10px;flex:none}
 .third .tie::before,.third .tie::after{display:none}
 @media (min-width:700px){
-  .col h3{text-align:center}
-  .tie .row{font-size:13px;padding:6px 8px}
-  .tie .row .sc{font-size:11.5px}
-  .tie .cap .when{display:none}
+  .col h3{font-size:11px;letter-spacing:.18em}
+  .tie .cap{font-size:9.5px;padding:5px 10px 2px}
+  .tie .row{font-size:13.5px;padding:6px 10px}
+  .tie .row .sc{font-size:13px}
+  .col.r2 .tie::before,.col.r3 .tie::before{left:-19px;width:16px}
+  .col.r1 .tie::after,.col.r2 .tie::after{right:-19px;width:16px}
+}
+.col.r2 .tie::before,.col.r3 .tie::before{
+  content:"";position:absolute;left:-10px;top:50%;width:8px;border-top:1px solid var(--rule);
+}
+.col.r1 .tie::after,.col.r2 .tie::after{
+  content:"";position:absolute;right:-10px;top:50%;width:8px;border-top:1px solid var(--rule);
 }
 
 /* ── расписание ── */
-.day{margin-bottom:24px}
+.day{margin-bottom:20px}
 .day h3{
-  font-family:var(--display);font-weight:600;font-size:15px;
-  letter-spacing:.12em;text-transform:uppercase;
-  padding-bottom:7px;border-bottom:1px solid rgba(237,231,223,.14);
+  font-family:var(--display);font-weight:700;font-size:16px;
+  letter-spacing:.1em;text-transform:uppercase;
+  padding-bottom:6px;border-bottom:2px solid var(--clay);
   display:flex;justify-content:space-between;align-items:baseline;gap:10px;
 }
-.day h3 span{font-size:10.5px;font-weight:400;letter-spacing:.14em;color:var(--muted)}
+.day h3 span{font-size:10.5px;font-weight:500;letter-spacing:.12em;color:var(--muted)}
 .slotline{
-  font-family:var(--display);font-size:14px;letter-spacing:.1em;
-  color:var(--ball);padding:11px 0 3px;
-  font-variant-numeric:tabular-nums;
+  font-family:var(--display);font-weight:700;font-size:14px;letter-spacing:.08em;
+  color:#FFF3E7;background:var(--clay);display:inline-block;
+  padding:2px 9px;margin:12px 0 4px;font-variant-numeric:tabular-nums;
 }
 .kolabel{
   font-family:var(--display);font-size:9.5px;letter-spacing:.14em;
@@ -259,64 +243,112 @@ th.mx,td.mx{display:none}
 }
 .match{
   display:grid;grid-template-columns:auto 1fr auto;gap:9px;align-items:baseline;
-  padding:7px 0;border-bottom:1px solid rgba(237,231,223,.07);
+  padding:7px 0;border-bottom:1px solid var(--rule-soft);
 }
 .tag{
-  font-family:var(--display);font-size:10px;letter-spacing:.06em;color:var(--muted);
-  background:var(--ground-2);padding:3px 6px;text-align:center;white-space:nowrap;
+  font-family:var(--display);font-weight:600;font-size:10px;letter-spacing:.06em;
+  color:var(--ink);background:var(--sand-2);border:1px solid var(--rule);
+  padding:2px 6px;text-align:center;white-space:nowrap;
 }
 .pair{min-width:0;font-size:13.5px;line-height:1.3}
 .pair .n{font-weight:500}
-.pair .n.w{color:var(--ball);font-weight:700}
+.pair .n.w{color:var(--ball-dk);font-weight:700}
 .pair .vs{color:var(--muted);margin:0 5px}
-.sc2{font-family:var(--display);font-size:14px;white-space:nowrap;text-align:right}
-.sc2.pending{font-size:10.5px;letter-spacing:.12em;text-transform:uppercase}
+.sc2{font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap;text-align:right}
+.sc2.pending{font-size:10.5px;font-weight:400;letter-spacing:.1em;text-transform:uppercase}
+@media (max-width:480px){
+  .match{grid-template-columns:auto 1fr}
+  .sc2{grid-column:2;text-align:left;padding-top:1px}
+}
 
-/* ── низ ── */
-.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:14px}
-.info div{background:var(--ground-2);padding:13px 16px;border-top:2px solid var(--clay)}
+/* ── регламент ── */
+.info{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
+.info div{
+  background:var(--card);padding:13px 15px;
+  border:1px solid var(--rule);border-top:3px solid var(--ball);
+}
 .info h4{
-  font-family:var(--display);font-weight:500;font-size:10px;
+  font-family:var(--display);font-weight:600;font-size:10.5px;
   letter-spacing:.16em;text-transform:uppercase;color:var(--clay);margin-bottom:5px;
 }
 .info p{font-size:13px;color:var(--muted)}
-.info b{color:var(--line);font-weight:600}
-.tbd{color:var(--ball)}
+.info b{color:var(--ink);font-weight:600}
+.tbd{color:var(--clay);font-style:italic}
 .seeds{list-style:none;font-size:13px}
 .seeds li{display:flex;justify-content:space-between;gap:10px;padding:3px 0;color:var(--muted)}
-.seeds li b{color:var(--line);font-weight:500}
-.seeds li i{font-style:normal;font-family:var(--display);color:var(--ball)}
+.seeds li b{color:var(--ink);font-weight:600}
+.seeds li i{font-style:normal;font-family:var(--display);color:var(--clay);font-weight:600}
 
 footer{
-  margin-top:40px;padding:20px 0 44px;
-  border-top:1px solid rgba(237,231,223,.12);
+  margin-top:26px;padding:16px 0 40px;border-top:1px solid var(--rule);
   font-size:11.5px;color:var(--muted);
   display:flex;justify-content:space-between;flex-wrap:wrap;gap:10px;
 }
 footer span{font-family:var(--display);letter-spacing:.12em;text-transform:uppercase}
-
-
 </style>
 </head>
 <body>
 
 <div class="court" aria-hidden="true">
-  <svg viewBox="0 0 1200 640" xmlns="http://www.w3.org/2000/svg">
-    <rect width="1200" height="640" fill="#C1603A"/>
-    <g fill="none" stroke="#F5F0E8" stroke-width="3">
-      <rect x="120" y="60" width="960" height="520"/>
-      <rect x="120" y="125" width="960" height="390"/>
-      <line x1="600" y1="60" x2="600" y2="580"/>
-      <rect x="255" y="125" width="690" height="390"/>
-      <line x1="255" y1="320" x2="945" y2="320"/>
-      <line x1="600" y1="45" x2="600" y2="75"/>
-      <line x1="600" y1="565" x2="600" y2="595"/>
+  <svg viewBox="0 0 400 800" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+    <defs>
+      <g id="ball">
+        <circle cx="0" cy="0" r="26" fill="none" stroke="#C2552C" stroke-width="2.4"/>
+        <path d="M-26 0a34 34 0 0 1 22-32 34 34 0 0 0 0 64 34 34 0 0 1-22-32z" fill="none" stroke="#C2552C" stroke-width="2.4"/>
+        <path d="M26 0a34 34 0 0 0-22-32 34 34 0 0 1 0 64 34 34 0 0 0 22-32z" fill="none" stroke="#C2552C" stroke-width="2.4"/>
+      </g>
+      <g id="racket">
+        <ellipse cx="0" cy="-34" rx="26" ry="34" fill="none" stroke="#C2552C" stroke-width="2.6"/>
+        <path d="M-17 -52h34M-21 -40h42M-21 -28h42M-17 -16h34" stroke="#C2552C" stroke-width="1.1" opacity=".8"/>
+        <path d="M-6 -52v72M6 -52v72" stroke="#C2552C" stroke-width="1.1" opacity=".8"/>
+        <path d="M-5 0q5 14 0 30-5 12 5 22" fill="none" stroke="#C2552C" stroke-width="2.6"/>
+        <rect x="-6" y="46" width="12" height="22" rx="5" fill="none" stroke="#C2552C" stroke-width="2.6"/>
+      </g>
+    </defs>
+    <g opacity=".09">
+      <use href="#ball" x="52" y="120"/>
+      <use href="#ball" x="300" y="290"/>
+      <use href="#ball" x="70" y="600"/>
+      <use href="#ball" x="330" y="742"/>
+      <use href="#racket" x="332" y="150" transform="rotate(24 332 150)"/>
+      <use href="#racket" x="48" y="392" transform="rotate(-32 48 392)"/>
+      <use href="#racket" x="318" y="640" transform="rotate(14 318 640)"/>
+      <g fill="none" stroke="#C2552C" stroke-width="2">
+        <rect x="118" y="228" width="172" height="232"/>
+        <line x1="118" y1="344" x2="290" y2="344"/>
+        <line x1="204" y1="228" x2="204" y2="460"/>
+      </g>
     </g>
-    <line x1="120" y1="320" x2="1080" y2="320" stroke="#14110F" stroke-width="7" opacity=".55"/>
   </svg>
 </div>
 
 <div class="page">
+<header class="hero">
+  <svg class="lines" viewBox="0 0 400 200" preserveAspectRatio="none" aria-hidden="true">
+    <g fill="none" stroke="#FFF3E7" stroke-width="1.1" opacity=".38">
+      <path d="M-40 176 L200 24 L440 176"/>
+      <path d="M-40 200 L200 52 L440 200"/>
+      <line x1="200" y1="24" x2="200" y2="200"/>
+      <line x1="20" y1="120" x2="380" y2="120"/>
+    </g>
+  </svg>
+  <svg class="ballart" viewBox="-40 -40 80 80" aria-hidden="true">
+    <circle cx="0" cy="0" r="33" fill="#CFE81C"/>
+    <path d="M-33 0a44 44 0 0 1 28-41 44 44 0 0 0 0 82 44 44 0 0 1-28-41z" fill="none" stroke="#FFF7EE" stroke-width="3"/>
+    <path d="M33 0a44 44 0 0 0-28-41 44 44 0 0 1 0 82 44 44 0 0 0 28-41z" fill="none" stroke="#FFF7EE" stroke-width="3"/>
+  </svg>
+  <div class="wrap">
+    <div class="discipline">Основной турнир · теннис, одиночный разряд</div>
+    <h1>Чемпионат Селижаровского района</h1>
+    <dl class="facts">
+      <div><dt>Место</dt><dd>Green Gold Park</dd></div>
+      <div><dt>Сроки</dt><dd>28–30 августа 2026</dd></div>
+      <div><dt>Группа</dt><dd>Абсолют</dd></div>
+      <div><dt>Участников</dt><dd>13 игроков</dd></div>
+    </dl>
+  </div>
+</header>
+
 <nav><div class="wrap"><ul>
   <li><a href="#groups"   data-tab="groups">Группы</a></li>
   <li><a href="#bracket"  data-tab="bracket">Сетка</a></li>
@@ -325,17 +357,6 @@ footer span{font-family:var(--display);letter-spacing:.12em;text-transform:upper
 </ul></div></nav>
 
 <div class="wrap">
-  <header>
-    <div class="discipline">Основной турнир · теннис, одиночный разряд</div>
-    <h1>Чемпионат<br>Селижаровского района</h1>
-    <dl class="facts">
-      <div><dt>Место проведения</dt><dd>Green Gold Park</dd></div>
-      <div><dt>Сроки</dt><dd>28–30.08.2026</dd></div>
-      <div><dt>Возрастная группа</dt><dd>Абсолют</dd></div>
-      <div><dt>Участников</dt><dd>13</dd></div>
-    </dl>
-  </header>
-
   <section id="groups" class="tab">
     <h2>Группы</h2>
     <p class="lede">Круговая система, каждый с каждым. Из каждой группы в основную сетку выходят двое. Место в группе проставляется только после того, как сыграны все её матчи: по числу побед, при равенстве — личная встреча, затем разница сетов и геймов.</p>
@@ -417,7 +438,7 @@ const RESULTS = {
 };
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 16:17 мск";
+const UPDATED = "27 августа, 16:44 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -594,7 +615,7 @@ function renderGroups(){
         '<td class="mx">' + (played ? r.sw + ":" + r.sl : "—") + "</td>" +
         '<td class="mx">' + (played ? r.gw + ":" + r.gl : "—") + "</td>" +
         '<td class="place' + (done && r.place <= 2 ? " top" : "") + '">' +
-          (done ? r.place : "—") + "</td></tr>";
+          (done ? (r.place <= 2 ? "<span>" + r.place + "</span>" : r.place) : "—") + "</td></tr>";
     }).join("");
     return '<div class="gcard"><h3>Группа «' + g + '» <em>' + cs.length + " участника</em></h3>" +
       '<div class="scroll"><table><thead>' + head + "</thead><tbody>" + body +
