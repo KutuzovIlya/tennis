@@ -275,6 +275,19 @@ th.mx,td.mx{display:none}
 .pair .vs{color:var(--muted);margin:0 5px}
 .sc2{font-family:var(--display);font-weight:600;font-size:14px;white-space:nowrap;text-align:right}
 .sc2.pending{font-size:10.5px;font-weight:400;letter-spacing:.1em;text-transform:uppercase}
+.sc2.live{
+  color:#fff;background:var(--clay);padding:2px 9px;
+  justify-self:start;width:max-content;
+  font-size:10.5px;letter-spacing:.14em;text-transform:uppercase;
+  display:inline-flex;align-items:center;gap:6px;
+}
+.sc2.live i{
+  width:6px;height:6px;border-radius:50%;background:var(--ball);
+  animation:pulse 1.4s ease-in-out infinite;
+}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.35;transform:scale(.75)}}
+.match.ismatch{background:rgba(180,73,42,.07);box-shadow:inset 3px 0 0 var(--clay)}
+.match.ismatch .tag{background:var(--clay);color:#FFF3E7;border-color:var(--clay)}
 @media (max-width:480px){
   .match{grid-template-columns:auto 1fr}
   .sc2{grid-column:2;text-align:left;padding-top:1px}
@@ -482,8 +495,10 @@ const RESULTS = {
   "ПФ1": "", "ПФ2": "", "Ф": "", "М3": ""
 };
 
+const LIVE = ["В1-В2"];   // идут прямо сейчас
+
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7. При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "27 августа, 18:58 мск";
+const UPDATED = "28 августа, 15:12 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -522,7 +537,8 @@ const KO = {
    c — номер корта. Для группового матча — коды игроков, для сетки — ko.   */
 const SCHEDULE = [
   { date:"28 августа", dow:"пятница", slots:[
-    { t:"15:00", m:[ {c:1,a:"Г4",b:"Г3"}, {c:2,a:"В1",b:"В2"} ] },
+    { t:"15:00", m:[ {c:2,a:"В1",b:"В2"} ] },
+    { t:"15:30", m:[ {c:1,a:"Г4",b:"Г3"} ] },
     { t:"16:30", m:[ {c:1,a:"А3",b:"А2"}, {c:2,a:"Г4",b:"Г2"} ] },
     { t:"17:30", m:[ {c:1,a:"Г1",b:"Г3"}, {c:2,a:"В1",b:"В3"} ] },
     { t:"19:00", m:[ {c:1,a:"Г1",b:"Г2"}, {c:2,a:"А1",b:"А3"} ] }
@@ -713,10 +729,14 @@ function scheduleRow(m){
   }
   const nm = (x, won) => '<span class="n' + (won ? " w" : "") + '">' +
     esc(x.done === false && m.ko ? (x.slot || "—") : shortName(x.name)) + "</span>";
+  const key = m.ko ? m.ko : (LIVE.indexOf(m.a + "-" + m.b) >= 0 ? m.a + "-" + m.b
+                            : (LIVE.indexOf(m.b + "-" + m.a) >= 0 ? m.b + "-" + m.a : ""));
+  const live = !r && key && LIVE.indexOf(key) >= 0;
   const sc = r ? '<span class="sc2">' + fmt(r) + "</span>"
-               : '<span class="sc2 pending">—</span>';
+               : (live ? '<span class="sc2 live"><i></i>идёт</span>'
+                       : '<span class="sc2 pending">—</span>');
   const cap = m.ko ? '<span class="kolabel">' + KO[m.ko].cap.split(" · ")[0] + "</span> " : "";
-  return '<div class="match"><span class="tag">К' + m.c + "</span>" +
+  return '<div class="match' + (live ? " ismatch" : "") + '"><span class="tag">К' + m.c + "</span>" +
     '<span class="pair">' + cap + nm(a, r && r.aWon) +
     '<span class="vs">—</span>' + nm(b, r && !r.aWon) + "</span>" + sc + "</div>";
 }
