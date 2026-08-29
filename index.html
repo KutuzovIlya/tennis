@@ -184,6 +184,10 @@ th.mx,td.mx{display:none}
   td.cell{font-size:13px;white-space:nowrap}
 }
 .pending{color:var(--muted);opacity:.5}
+.fznote{
+  font-size:11px;color:var(--clay);padding:8px 14px 10px;
+  border-top:1px solid var(--rule-soft);
+}
 
 /* ── сетка ── */
 .br{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:9px;align-items:stretch}
@@ -336,6 +340,10 @@ details.day[open] > summary span::after{content:" ▴"}
 .sc2.nextlab{
   font-size:9.5px;font-weight:600;letter-spacing:.14em;
   text-transform:uppercase;color:var(--court);
+}
+.sc2.noscore{
+  font-size:9.5px;font-weight:600;letter-spacing:.1em;
+  text-transform:uppercase;color:var(--muted);
 }
 .sc2.await{
   font-size:9.5px;font-weight:600;letter-spacing:.12em;
@@ -545,10 +553,16 @@ const RESULTS = {
   "ПФ1": "", "ПФ2": "", "Ф": "", "М3": ""
 };
 
+/* Победитель известен, счёт ещё нет. "a" — выиграл первый в ключе, "b" — второй. */
+const WINS = {
+  "В2-В3": "b",   // Чуракова — Убский Д.: выиграл Убский Даниил
+  "Б1-Б3": "a"    // Алексеев — Безобразов: выиграл Алексеев
+};
+
 const LIVE = ["Б1-Б2"];   // идут прямо сейчас
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7 очков с разницей в два (поэтому возможен счёт 10:8). При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "29 августа, 14:12 мск";
+const UPDATED = "29 августа, 14:16 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -637,15 +651,22 @@ function parse(score){
   });
   return { sets, sa, sb, ga, gb, tb, aWon: sa > sb };
 }
+function result(id){
+  const r = parse(RESULTS[id]);
+  if(r) return r;
+  const w = WINS[id];
+  if(!w) return null;
+  return { sets:[], sa:0, sb:0, ga:0, gb:0, tb:false, noScore:true, aWon: w === "a" };
+}
 const fmt = r => r.sets.map(s => s[0] + ":" + s[1] + (s[2] === null ? "" : "(" + s[2] + ")")).join(" ");
 const flip = r => ({ sets:r.sets.map(s => [s[1], s[0], s[2]]), sa:r.sb, sb:r.sa,
-                     ga:r.gb, gb:r.ga, tb:r.tb, aWon:!r.aWon });
+                     ga:r.gb, gb:r.ga, tb:r.tb, noScore:r.noScore, aWon:!r.aWon });
 
 /* результат матча между двумя кодами, с точки зрения x */
 function between(x, y){
-  const dir = parse(RESULTS[x + "-" + y]);
+  const dir = result(x + "-" + y);
   if(dir) return dir;
-  const rev = parse(RESULTS[y + "-" + x]);
+  const rev = result(y + "-" + x);
   return rev ? flip(rev) : null;
 }
 
@@ -656,7 +677,9 @@ function groupIds(g){
     for(let j = i + 1; j < cs.length; j++) out.push(cs[i] + "-" + cs[j]);
   return out;
 }
-const groupDone = g => groupIds(g).every(id => parse(RESULTS[id]));
+const groupDone = g => groupIds(g).every(id => result(id));
+// в группе есть матч, где известен только победитель
+const groupFuzzy = g => groupIds(g).some(id => { const r = result(id); return r && r.noScore; });
 
 function table(g){
   const cs = GROUPS[g];
@@ -690,11 +713,12 @@ function table(g){
    от +1 до +2 к разнице, поражение — от -2 до -1.                        */
 function clinch(g){
   const cs = GROUPS[g], ids = groupIds(g);
-  const pending = ids.filter(id => !parse(RESULTS[id]));
+  const pending = ids.filter(id => !result(id));
+  const fuzzy = groupFuzzy(g);
   const base = {};
   cs.forEach(c => { base[c] = { w:0, d:0 }; });
   ids.forEach(id => {
-    const r = parse(RESULTS[id]); if(!r) return;
+    const r = result(id); if(!r) return;
     const x = id.split("-")[0], y = id.split("-")[1];
     base[x].d += r.sa - r.sb; base[y].d += r.sb - r.sa;
     if(r.aWon) base[x].w++; else base[y].w++;
@@ -717,6 +741,7 @@ function clinch(g){
         if(y === x) return;
         if(st[y].w > st[x].w){ could++; must++; return; }
         if(st[y].w < st[x].w) return;
+        if(fuzzy){ could++; return; }   // разница сетов неполная — на неё не опираемся
         if(best(y) >= worst(x)) could++;
         if(worst(y) > best(x)) must++;
       });
@@ -735,7 +760,7 @@ function clinch(g){
 
 /* место игрока: окончательное, если группа доиграна, иначе досрочно решённое */
 function places(g){
-  if(groupDone(g)){
+  if(groupDone(g) && !groupFuzzy(g)){
     const o = {}; table(g).order.forEach(r => { o[r.code] = r.place; });
     return { map:o, final:true };
   }
@@ -752,7 +777,7 @@ function side(ref){
              slot: ref.g + ref.pos, done:false };
   }
   const src = ref.win || ref.lose;
-  const r = parse(RESULTS[src]);
+  const r = result(src);
   const s = sides(src);
   if(!r) return { name:(ref.win ? "Победитель " : "Проигравший ") + KO[src].cap.replace(" · ", " "),
                   slot:"—", done:false };
@@ -766,7 +791,7 @@ const $ = id => document.getElementById(id);
 
 function renderGroups(){
   $("groups-box").innerHTML = Object.keys(GROUPS).map(g => {
-    const cs = GROUPS[g], t = table(g), pl = places(g);
+    const cs = GROUPS[g], t = table(g), pl = places(g), fz = groupFuzzy(g);
     const head = '<tr><th class="n">№</th><th class="l">Участник</th>' +
       cs.map((c, i) => "<th>" + (i + 1) + "</th>").join("") +
       '<th class="mx">В</th><th class="mx">Сеты</th><th class="mx">Геймы</th>' +
@@ -778,9 +803,11 @@ function renderGroups(){
       const cells = cs.map(o => {
         if(o === c) return '<td class="self"></td>';
         const m = between(c, o);
-        return m
-          ? '<td class="cell' + (m.aWon ? " cellw" : "") + '">' + fmt(m) + "</td>"
-          : '<td class="cell pending">—</td>';
+        if(!m) return '<td class="cell pending">—</td>';
+        if(m.noScore)
+          return '<td class="cell' + (m.aWon ? " cellw" : " pending") + '">' +
+                 (m.aWon ? "\u2713" : "\u2717") + "</td>";
+        return '<td class="cell' + (m.aWon ? " cellw" : "") + '">' + fmt(m) + "</td>";
       }).join("");
       return "<tr>" +
         '<td class="n">' + (i + 1) + "</td>" +
@@ -797,7 +824,9 @@ function renderGroups(){
     }).join("");
     return '<div class="gcard"><h3>Группа «' + g + '» <em>' + cs.length + " участника</em></h3>" +
       '<div class="scroll"><table><thead>' + head + "</thead><tbody>" + body +
-      "</tbody></table></div></div>";
+      "</tbody></table></div>" +
+      (fz ? '<p class="fznote">* счёт части матчей ещё не сообщён — сеты и геймы неполные</p>' : "") +
+      "</div>";
   }).join("");
 }
 
@@ -806,7 +835,7 @@ function shortName(n){
   return p.length > 1 ? p[0] + " " + p[1][0] + "." : p[0];
 }
 function tieBox(id){
-  const k = KO[id], s = sides(id), r = parse(RESULTS[id]);
+  const k = KO[id], s = sides(id), r = result(id);
   const row = (x, won, sc) => {
     const solid = !!x.done;
     const label = solid ? shortName(x.name) : (x.slot || "—");
@@ -816,7 +845,7 @@ function tieBox(id){
   };
   const sa = r ? fmt(r) : "", sb = "";
   const when = WHEN[id] ? '<span class="when">' + WHEN[id] + "</span>" : "";
-  const sc = r ? fmt(r.aWon ? r : flip(r)) : "";
+  const sc = r ? (r.noScore ? "\u2713" : fmt(r.aWon ? r : flip(r))) : "";
   return '<div class="tie' + (r ? " done" : "") + '"><div class="cap">' + (k.short || k.cap) + when + "</div>" +
     row(s.a, r && r.aWon, r && r.aWon ? sc : "") +
     row(s.b, r && !r.aWon, r && !r.aWon ? sc : "") + "</div>";
@@ -837,7 +866,7 @@ function renderBracket(){
 function matchSides(m){
   if(m.ko){
     const sd = sides(m.ko);
-    return { a:sd.a, b:sd.b, r:parse(RESULTS[m.ko]) };
+    return { a:sd.a, b:sd.b, r:result(m.ko) };
   }
   return {
     a:{ name:PLAYERS[m.a].name, slot:m.a, done:true },
@@ -861,7 +890,9 @@ function scheduleRow(m, state){
   const x = matchSides(m), r = x.r;
   const nm = (side, won) => '<span class="n' + (r ? (won ? " w" : " lost") : "") + '">' +
     esc(side.done === false && m.ko ? (side.slot || "—") : shortName(side.name)) + "</span>";
-  const sc = r ? '<span class="sc2">' + fmt(r.aWon ? r : flip(r)) + "</span>"
+  const sc = r ? (r.noScore
+                  ? '<span class="sc2 noscore">счёт уточняется</span>'
+                  : '<span class="sc2">' + fmt(r.aWon ? r : flip(r)) + "</span>")
                : (state === "live" ? '<span class="sc2 live"><i></i>идёт</span>'
                   : state === "next" ? '<span class="sc2 nextlab">следующий</span>'
                   : state === "await" ? '<span class="sc2 await">ждём счёт</span>'
