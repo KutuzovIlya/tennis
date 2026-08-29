@@ -299,6 +299,50 @@ th.mx,td.mx{display:none}
   .sc2{grid-column:2;text-align:left;padding-top:1px}
 }
 
+
+.progress{
+  background:var(--card);border:1px solid var(--rule);
+  border-left:3px solid var(--court);padding:11px 13px;margin-bottom:16px;
+}
+.progress .cnt{
+  display:block;font-family:var(--display);font-size:11px;letter-spacing:.16em;
+  text-transform:uppercase;color:var(--clay);margin-bottom:6px;
+}
+.progress .bar{height:6px;background:var(--sand-2);overflow:hidden;margin-bottom:8px}
+.progress .bar i{display:block;height:100%;background:var(--court)}
+.progress .ptxt{font-size:12.5px;color:var(--muted);line-height:1.45}
+.progress .ptxt b{color:var(--ink);font-weight:600}
+
+details.day{margin-bottom:16px}
+details.day > summary{
+  list-style:none;cursor:pointer;
+  padding-bottom:6px;border-bottom:2px solid var(--clay);
+  display:flex;justify-content:space-between;align-items:baseline;gap:10px;
+  font-family:var(--display);font-weight:700;font-size:16px;
+  letter-spacing:.1em;text-transform:uppercase;
+}
+details.day > summary::-webkit-details-marker{display:none}
+details.day > summary::marker{content:""}
+details.day > summary span{
+  font-size:10.5px;font-weight:500;letter-spacing:.12em;color:var(--muted);
+}
+details.day > summary span::after{content:" ▾";color:var(--clay)}
+details.day[open] > summary span::after{content:" ▴"}
+.slotline.past{background:var(--sand-2);color:var(--muted)}
+.match.done{opacity:.62}
+.match.done .tag{opacity:.6}
+.match.next{background:rgba(32,64,46,.06);box-shadow:inset 3px 0 0 var(--court)}
+.match.next .tag{background:var(--court);color:#F2EFE4;border-color:var(--court)}
+.sc2.nextlab{
+  font-size:9.5px;font-weight:600;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--court);
+}
+.sc2.await{
+  font-size:9.5px;font-weight:600;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--clay);
+}
+.match.await{box-shadow:inset 3px 0 0 var(--clay-lt)}
+
 /* ── регламент ── */
 .info{display:grid;grid-template-columns:repeat(auto-fit,minmax(230px,1fr));gap:12px}
 .info div{
@@ -504,7 +548,7 @@ const RESULTS = {
 const LIVE = ["Б1-Б2"];   // идут прямо сейчас
 
 const FORMAT = { match: "Два сета до 6 геймов. Счёт в гейме — с преимуществом, «больше — меньше». При 6:6 в сете — тай-брейк до 7 очков с разницей в два (поэтому возможен счёт 10:8). При счёте 1:1 по сетам — решающий тай-брейк до 10 очков.", courts: "Два корта. Матчи с интервалом 1 ч 30 мин, в пятницу первый матч в 15:00, в субботу и воскресенье — в 9:00." };
-const UPDATED = "29 августа, 13:59 мск";
+const UPDATED = "29 августа, 14:12 мск";
 
 /* ═══════ состав ═══════ */
 const PLAYERS = {
@@ -790,37 +834,99 @@ function renderBracket(){
   $("third-box").innerHTML = tieBox("М3");
 }
 
-function scheduleRow(m){
-  let a, b, r;
+function matchSides(m){
   if(m.ko){
     const sd = sides(m.ko);
-    a = sd.a; b = sd.b; r = parse(RESULTS[m.ko]);
-  } else {
-    a = { name: PLAYERS[m.a].name, slot: m.a };
-    b = { name: PLAYERS[m.b].name, slot: m.b };
-    r = between(m.a, m.b);
+    return { a:sd.a, b:sd.b, r:parse(RESULTS[m.ko]) };
   }
-  const nm = (x, won) => '<span class="n' + (r ? (won ? " w" : " lost") : "") + '">' +
-    esc(x.done === false && m.ko ? (x.slot || "—") : shortName(x.name)) + "</span>";
-  const key = m.ko ? m.ko : (LIVE.indexOf(m.a + "-" + m.b) >= 0 ? m.a + "-" + m.b
-                            : (LIVE.indexOf(m.b + "-" + m.a) >= 0 ? m.b + "-" + m.a : ""));
-  const live = !r && key && LIVE.indexOf(key) >= 0;
+  return {
+    a:{ name:PLAYERS[m.a].name, slot:m.a, done:true },
+    b:{ name:PLAYERS[m.b].name, slot:m.b, done:true },
+    r:between(m.a, m.b)
+  };
+}
+function liveKey(m){
+  if(m.ko) return m.ko;
+  if(LIVE.indexOf(m.a + "-" + m.b) >= 0) return m.a + "-" + m.b;
+  if(LIVE.indexOf(m.b + "-" + m.a) >= 0) return m.b + "-" + m.a;
+  return "";
+}
+function pairText(m){
+  const x = matchSides(m);
+  const nm = s => (s.done === false && m.ko) ? (s.slot || "—") : shortName(s.name);
+  return nm(x.a) + " — " + nm(x.b);
+}
+
+function scheduleRow(m, state){
+  const x = matchSides(m), r = x.r;
+  const nm = (side, won) => '<span class="n' + (r ? (won ? " w" : " lost") : "") + '">' +
+    esc(side.done === false && m.ko ? (side.slot || "—") : shortName(side.name)) + "</span>";
   const sc = r ? '<span class="sc2">' + fmt(r.aWon ? r : flip(r)) + "</span>"
-               : (live ? '<span class="sc2 live"><i></i>идёт</span>'
-                       : '<span class="sc2 pending">—</span>');
+               : (state === "live" ? '<span class="sc2 live"><i></i>идёт</span>'
+                  : state === "next" ? '<span class="sc2 nextlab">следующий</span>'
+                  : state === "await" ? '<span class="sc2 await">ждём счёт</span>'
+                  : '<span class="sc2 pending">—</span>');
   const cap = m.ko ? '<span class="kolabel">' + KO[m.ko].cap.split(" · ")[0] + "</span> " : "";
-  return '<div class="match' + (live ? " ismatch" : "") + '"><span class="tag">К' + m.c + "</span>" +
-    '<span class="pair">' + cap + nm(a, r && r.aWon) +
-    '<span class="vs">—</span>' + nm(b, r && !r.aWon) + "</span>" + sc + "</div>";
+  const cls = state === "live" ? " ismatch" : state === "next" ? " next"
+            : state === "done" ? " done" : state === "await" ? " await" : "";
+  return '<div class="match' + cls + '"><span class="tag">К' + m.c + "</span>" +
+    '<span class="pair">' + cap + nm(x.a, r && r.aWon) +
+    '<span class="vs">—</span>' + nm(x.b, r && !r.aWon) + "</span>" + sc + "</div>";
 }
 
 function renderSchedule(){
-  $("schedule-box").innerHTML = SCHEDULE.map(d => {
-    const n = d.slots.reduce((s, sl) => s + sl.m.length, 0);
-    return '<div class="day"><h3>' + d.date + "<span>" + d.dow + " · " + n + " матчей</span></h3>" +
-      d.slots.map(sl => '<div class="slotline">' + sl.t + "</div>" +
-        sl.m.map(scheduleRow).join("")).join("") + "</div>";
+  const flat = [];
+  SCHEDULE.forEach((d, di) => d.slots.forEach(sl => sl.m.forEach(m => {
+    const x = matchSides(m);
+    const k = liveKey(m);
+    flat.push({ di, t:sl.t, m, done:!!x.r, live: !x.r && !!k && LIVE.indexOf(k) >= 0 });
+  })));
+  const total = flat.length;
+  const played = flat.filter(x => x.done).length;
+  const liveOnes = flat.filter(x => x.live);
+  // следующий матч не может стоять раньше того, который уже идёт
+  let lastLive = -1;
+  flat.forEach((x, i) => { if(x.live) lastLive = i; });
+  let nextOne = null;
+  for(let i = lastLive + 1; i < flat.length; i++){
+    if(!flat[i].done && !flat[i].live){ nextOne = flat[i]; break; }
+  }
+  const st = new Map();
+  flat.forEach((x, i) => st.set(x.m,
+    x.done ? "done"
+    : x.live ? "live"
+    : x === nextOne ? "next"
+    : i < lastLive ? "await"          // стоит раньше идущего, а счёта нет
+    : ""));
+
+  let line;
+  if(liveOnes.length)
+    line = "Сейчас на кортах: <b>" + liveOnes.map(x => pairText(x.m)).join("</b>, <b>") + "</b>" +
+           (nextOne ? " · дальше в " + nextOne.t + ": " + pairText(nextOne.m) : "");
+  else if(nextOne)
+    line = "Следующий матч в <b>" + nextOne.t + "</b> — <b>" + pairText(nextOne.m) + "</b>";
+  else line = "Все матчи турнира сыграны";
+
+  const head = '<div class="progress">' +
+    '<span class="cnt">Сыграно ' + played + " из " + total + "</span>" +
+    '<div class="bar"><i style="width:' + Math.round(played / total * 100) + '%"></i></div>' +
+    '<div class="ptxt">' + line + "</div></div>";
+
+  const days = SCHEDULE.map((d, di) => {
+    const mine = flat.filter(x => x.di === di);
+    const dn = mine.filter(x => x.done).length;
+    const all = dn === mine.length;
+    const body = d.slots.map(sl => {
+      const slotAll = sl.m.every(m => st.get(m) === "done");
+      return '<div class="slotline' + (slotAll ? " past" : "") + '">' + sl.t + "</div>" +
+        sl.m.map(m => scheduleRow(m, st.get(m))).join("");
+    }).join("");
+    return "<details class=\"day\"" + (all ? "" : " open") + "><summary>" + d.date +
+      "<span>" + d.dow + " · " + (all ? "все " + mine.length + " сыграны" : dn + " из " + mine.length) +
+      "</span></summary>" + body + "</details>";
   }).join("");
+
+  $("schedule-box").innerHTML = head + days;
 }
 
 function renderInfo(){
